@@ -1,0 +1,34 @@
+{
+  "name": "wabe",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "client-install": "npm install --prefix client",
+    "start": "node index.js",
+    "server": "nodemon index.js",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \" npm run client\""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@ngrok/ngrok": "^1.0.0",
+    "axios": "^1.6.7",
+    "body-parser": "^1.20.2",
+    "concurrently": "^8.2.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "hbs": "^4.2.0",
+    "https": "^1.0.0",
+    "mongodb": "^6.3.0",
+    "mongoose": "^8.2.3",
+    "node-cron": "^3.0.3",
+    "node-schedule": "^2.1.1",
+    "nodejs-base64-converter": "^1.0.5",
+    "uniqid": "^5.4.0"
+  },
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
