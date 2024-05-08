@@ -1,9 +1,9 @@
 const uniqid = require("uniqid");
 //const { MongoClient, ObjectId, ChangeStream } = require("mongodb");
-const mongodb = require("mongodb");
+const {mongodb, ObjectId} = require("mongodb");
 const http = require("https");
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const url = "mongodb+srv://sharukajmal2:SharukDB%40123@cluster0.cfzoga8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const url = "mongodb+srv://sharukajmal2:sharukdb@cluster0.cfzoga8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 // const url =
 //   "mongodb+srv://yadharth:1234567890@wasender.qenvxus.mongodb.net/?retryWrites=true&w=majority";
 // const url =
@@ -419,12 +419,12 @@ exports.handleSendMsg = (req, res) => {
 exports.handleImportBulk = async (req, res) => {
   try {
     const params = {
-      token: "tz4c7nm9r4luh6i4",
+      token: "instance84036",
     };
 
     const config = {
       method: "get",
-      url: "https://api.ultramsg.com/instance77326/contacts",
+      url: "https://api.ultramsg.com/instance84036/contacts",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
@@ -464,6 +464,7 @@ exports.handleImportBulk = async (req, res) => {
           arrData: postObj,
           message: "success",
         });
+        console.log("Success");
       }
     });
   } catch (err) {
