@@ -7,8 +7,9 @@ const jwt = require("jsonwebtoken");
 const bcryptjs = require("bcryptjs");
 const dotenv = require("dotenv");
 dotenv.config();
-// const url = "mongodb+srv://sharukajmal2:sharukdb@cluster0.cfzoga8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-const url = "mongodb://127.0.0.1:27017/WASender";
+const url =
+    "mongodb+srv://subin:Password@cluster0.tvgqpfe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+// const url = "mongodb://127.0.0.1:27017/WASender";
 
 // const url =
 //   "mongodb+srv://yadharth:1234567890@wasender.qenvxus.mongodb.net/?retryWrites=true&w=majority";
@@ -106,8 +107,8 @@ exports.handleSetDevices = async (req, res) => {
             adminID: req.body?.adminID,
             name: req.body.name,
             number: req.body.number,
-            instanceID: "#######",
-            token: "#########",
+            instanceID: "instance87295",
+            token: "sstdltegyIn6p9e",
             deviceID: uniqid(),
             authenthicate: false,
             created: new Date(),
