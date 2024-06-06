@@ -1,28 +1,34 @@
 const {
-  handleSetContacts,
-  handleGetContacts,
-  handleDeleteContacts,
-  handleSendMsg,
-  handleSetDevices,
-  handleGetDevices,
-  handleEditContacts,
-  handleImportBulk,
-  handleDuplicates,
-  handleLogMessages,
-  handleLogChats,
-  handleQrCode,
-  handleInstance,
-  handleInstanceChange,
-  handleInstanceDetails,
-  handleCreateReply,
-  handleGetReply,
-  handleDeleteReply,
-  handleIdReply,
-  handleEditReply,
-  ultramsgwebhook,
-  schedulerSave,
+    handleSetContacts,
+    handleGetContacts,
+    handleDeleteContacts,
+    handleSendMsg,
+    handleSetDevices,
+    handleGetDevices,
+    handleEditContacts,
+    handleImportBulk,
+    handleDuplicates,
+    handleLogMessages,
+    handleLogChats,
+    handleQrCode,
+    handleInstance,
+    handleInstanceChange,
+    handleInstanceDetails,
+    handleCreateReply,
+    handleGetReply,
+    handleDeleteReply,
+    handleIdReply,
+    handleEditReply,
+    ultramsgwebhook,
+    schedulerSave,
+    handleSignUp,
+    handleSignin,
 } = require("../controllers");
 const router = require("express").Router();
+
+// Auth
+router.post("/signup", handleSignUp);
+router.post("/signin", handleSignin);
 
 //devices
 router.post("/setdevice", handleSetDevices);
