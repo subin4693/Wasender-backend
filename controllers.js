@@ -756,6 +756,7 @@ exports.handleEditReply = async (req, res) => {
 exports.ultramsgwebhook = async (req, res) => {
     try {
         // print all response
+        console.log(req.body);
         const messageMsg = req.body["data"]["body"]; // Message text
         var to = req.body["data"]["from"];
         const client = new MongoClient(uri, {
