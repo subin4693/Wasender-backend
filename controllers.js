@@ -787,7 +787,7 @@ exports.ultramsgwebhook = async (req, res) => {
         console.log("********************");
         console.log(req.body);
         console.log("********************");
-
+        return res.status(200).json({ message: "workig fine" });
         // const instanceId = "instance"+req.body.instanceId
         const messageMsg = req.body["data"]["body"]; // Message text
         var to = req.body["data"]["from"];
@@ -818,7 +818,7 @@ exports.ultramsgwebhook = async (req, res) => {
         ////////           });
         ////////   await client.close();
 
-        let insertData = await db.collection("trigger").findOne({});
+        // let insertData = await db.collection("trigger").findOne({});
 
         let insertData = await db.collection("trigger").findOne({ _id: 1 });
         if (insertData) {
