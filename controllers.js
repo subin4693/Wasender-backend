@@ -759,6 +759,7 @@ exports.ultramsgwebhook = async (req, res) => {
         console.log("working fine");
         console.log("request body");
         console.log(req.body);
+        return res.status(200).json({ message: "working fine" });
         const messageMsg = req.body["data"]["body"]; // Message text
         var to = req.body["data"]["from"];
         const client = new MongoClient(uri, {
