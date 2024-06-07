@@ -36,7 +36,7 @@ exports.handleSignin = async (req, res) => {
         }
         const token = jwt.sign(
             { id: user._id, role: user.role },
-            process.env.JWT_SECRECT
+            process.env.JWT_SECRECT,
         );
         // res.cookie("token", "bearer " + token);
         await client.close();
@@ -74,12 +74,12 @@ exports.handleSignUp = async (req, res) => {
 
             const insertedUser = await collection.findOne(
                 { _id: result.insertedId },
-                { projection: { role: 1, email: 1 } }
+                { projection: { role: 1, email: 1 } },
             );
 
             const token = jwt.sign(
                 { id: insertedUser._id, role: insertedUser.role },
-                process.env.JWT_SECRECT
+                process.env.JWT_SECRECT,
             );
             res.cookie("token", "bearer " + token);
 
@@ -179,7 +179,7 @@ exports.handleInstance = async (req, res) => {
                             $set: {
                                 authenthicate: true,
                             },
-                        }
+                        },
                     );
 
                     await client.close();
@@ -236,7 +236,7 @@ exports.handleInstanceChange = async (req, res) => {
                     $set: {
                         authenthicate: true,
                     },
-                }
+                },
             );
         }
         await client.close();
@@ -359,7 +359,7 @@ exports.handleEditContacts = async (req, res) => {
                     number: req.body.dataObj.number,
                 },
             },
-            { new: true }
+            { new: true },
         );
         await client.close();
         res.json({
@@ -619,7 +619,7 @@ exports.handleLogChats = async (req, res) => {
         console.log(
             fromSelect.token,
             `${toSelect.number}@c.us`,
-            fromSelect.instanceID
+            fromSelect.instanceID,
         );
         let params = {
             token: fromSelect.token,
@@ -737,7 +737,7 @@ exports.handleEditReply = async (req, res) => {
                     lng: dataObj.lng,
                     type: dataObj.type,
                 },
-            }
+            },
         );
         await client.close();
         res.json({
@@ -757,6 +757,7 @@ exports.ultramsgwebhook = async (req, res) => {
     try {
         // print all response
         console.log("working fine");
+        console.log("request body");
         console.log(req.body);
         const messageMsg = req.body["data"]["body"]; // Message text
         var to = req.body["data"]["from"];
