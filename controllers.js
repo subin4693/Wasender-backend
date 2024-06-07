@@ -759,8 +759,8 @@ exports.ultramsgwebhook = async (req, res) => {
 
         const instanceId = "instance" + req.body.instanceId;
         const messageMsg = req.body["data"]["body"]; // Message text
-        const from = req.body.data.to.split("@")[i].match(/\d+/g).join("");
-        const to = req.body.data.from.split("@")[i].match(/\d+/g).join("");
+        const from = req.body.data.to.split("@")[0].match(/\d+/g).join("");
+        const to = req.body.data.from.split("@")[0].match(/\d+/g).join("");
 
         const client = new MongoClient(url, {
             serverApi: {
