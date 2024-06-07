@@ -783,7 +783,13 @@ exports.ultramsgwebhook = async (req, res) => {
             message: messageMsg,
         };
         let values = await db.collection("reply").findOne(query);
+        console.log("*******************");
+        console.log(query);
+        console.log("*******************");
+
         console.log(values);
+        console.log("*******************");
+
         return res.status(200).json({ message: "working fine" });
         //////// await db.collection("trigger").insertOne({
         ////////       _id: 1,
