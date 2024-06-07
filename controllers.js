@@ -753,13 +753,42 @@ exports.handleEditReply = async (req, res) => {
 
 //-----------------------------------------------------------------------------------------
 
+// {
+//     _id:objectId,
+//     message:"hi",
+//     to:{
+//         label:"string",
+//         value:"3423",
+//         name:"sdfa",
+//         number:"asdfas"
+//     },
+//     from:[{
+//         label:"asdf",
+//         value:"3423",
+//         name:"sdfa",
+//         number:"asdfas",
+//         instanceID:"sdfas",
+//         token:"dsfasd",
+//     }],
+//     file:"dfasd",
+//     fileName:"fdsfa",
+//     body:"wfew",
+//     lat:"",
+//     lng:"",
+//     type:"chat"
+
+// }
+
 exports.ultramsgwebhook = async (req, res) => {
     try {
         // print all response
         // console.log("working fine");
         // console.log("request body");
+        console.log("********************");
         console.log(req.body);
+        console.log("********************");
 
+        // const instanceId = "instance"+req.body.instanceId
         const messageMsg = req.body["data"]["body"]; // Message text
         var to = req.body["data"]["from"];
         const client = new MongoClient(url, {
@@ -771,11 +800,25 @@ exports.ultramsgwebhook = async (req, res) => {
         });
         const db = client.db("WASender");
 
-        // await db.collection("trigger").insertOne({
-        //       _id: 1,
-        //       text: messageMsg
-        //           });
-        //   await client.close();
+        // const query = {
+        //     "to.number": toNumber,
+        //     "from": {
+        //         $elemMatch: {
+        //             "number": fromNumber,
+        //              "instanceID": instanceId
+        //         }
+        //     },
+
+        //     "message": messageMsg
+        // };
+
+        //////// await db.collection("trigger").insertOne({
+        ////////       _id: 1,
+        ////////       text: messageMsg
+        ////////           });
+        ////////   await client.close();
+
+        let insertData = await db.collection("trigger").findOne({});
 
         let insertData = await db.collection("trigger").findOne({ _id: 1 });
         if (insertData) {
