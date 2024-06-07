@@ -756,9 +756,9 @@ exports.handleEditReply = async (req, res) => {
 exports.ultramsgwebhook = async (req, res) => {
     try {
         // print all response
-        console.log("working fine");
-        console.log("request body");
-        console.log(req.body);
+        // console.log("working fine");
+        // console.log("request body");
+        console.log(req);
         return res.status(200).json({ message: "working fine" });
         const messageMsg = req.body["data"]["body"]; // Message text
         var to = req.body["data"]["from"];
