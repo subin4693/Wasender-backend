@@ -762,7 +762,7 @@ exports.ultramsgwebhook = async (req, res) => {
 
         const messageMsg = req.body["data"]["body"]; // Message text
         var to = req.body["data"]["from"];
-        const client = new MongoClient(uri, {
+        const client = new MongoClient(url, {
             serverApi: {
                 version: ServerApiVersion.v1,
                 strict: true,
