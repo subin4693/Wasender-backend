@@ -753,44 +753,15 @@ exports.handleEditReply = async (req, res) => {
 
 //-----------------------------------------------------------------------------------------
 
-// {
-//     _id:objectId,
-//     message:"hi",
-//     to:{
-//         label:"string",
-//         value:"3423",
-//         name:"sdfa",
-//         number:"asdfas"
-//     },
-//     from:[{
-//         label:"asdf",
-//         value:"3423",
-//         name:"sdfa",
-//         number:"asdfas",
-//         instanceID:"sdfas",
-//         token:"dsfasd",
-//     }],
-//     file:"dfasd",
-//     fileName:"fdsfa",
-//     body:"wfew",
-//     lat:"",
-//     lng:"",
-//     type:"chat"
-
-// }
-
 exports.ultramsgwebhook = async (req, res) => {
     try {
-        // print all response
-        // console.log("working fine");
-        // console.log("request body");
-        console.log("********************");
         console.log(req.body);
-        console.log("********************");
-        return res.status(200).json({ message: "workig fine" });
-        // const instanceId = "instance"+req.body.instanceId
+
+        const instanceId = "instance" + req.body.instanceId;
         const messageMsg = req.body["data"]["body"]; // Message text
-        var to = req.body["data"]["from"];
+        const from = req.body.data.to;
+        const to = req.body.data.from;
+
         const client = new MongoClient(url, {
             serverApi: {
                 version: ServerApiVersion.v1,
@@ -800,18 +771,20 @@ exports.ultramsgwebhook = async (req, res) => {
         });
         const db = client.db("WASender");
 
-        // const query = {
-        //     "to.number": toNumber,
-        //     "from": {
-        //         $elemMatch: {
-        //             "number": fromNumber,
-        //              "instanceID": instanceId
-        //         }
-        //     },
+        const query = {
+            "to.number": to,
+            from: {
+                $elemMatch: {
+                    number: from,
+                    instanceID: instanceId,
+                },
+            },
 
-        //     "message": messageMsg
-        // };
-
+            message: messageMsg,
+        };
+        let insertData = await db.collection("reply").findOne(query);
+        console.log(insertData);
+        return res.status(200).json({ message: "working fine" });
         //////// await db.collection("trigger").insertOne({
         ////////       _id: 1,
         ////////       text: messageMsg
