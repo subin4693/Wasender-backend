@@ -804,20 +804,20 @@ exports.ultramsgwebhook = async (req, res) => {
 
         if (dataObj.type === "chat") {
             data = qs.stringify({
-                token: `${dataObj.from.token}`,
+                token: `${dataObj.from[0].token}`,
                 to: `+${toDataNumbers.number}`,
                 body: `${dataObj.body}`,
             });
         } else if (dataObj.type === "contact") {
             data = qs.stringify({
-                token: `${dataObj.from.token}`,
+                token: `${dataObj.from[0].token}`,
                 to: `+${toDataNumbers.number}`,
                 contact: `${dataObj.body}@c.us`,
             });
         } else if (dataObj.type === "document") {
             console.log(dataObj.fileName);
             data = qs.stringify({
-                token: dataObj.from.token,
+                token: dataObj.from[0].token,
                 to: `+${toDataNumbers.number}`,
                 filename: dataObj.fileName,
                 document: dataObj.file,
@@ -825,27 +825,27 @@ exports.ultramsgwebhook = async (req, res) => {
             });
         } else if (dataObj.type === "image") {
             data = qs.stringify({
-                token: `${dataObj.from.token}`,
+                token: `${dataObj.from[0].token}`,
                 to: `+${toDataNumbers.number}`,
                 image: `${dataObj.file}`,
                 caption: `${dataObj.body}`,
             });
         } else if (dataObj.type === "video") {
             data = qs.stringify({
-                token: `${dataObj.from.token}`,
+                token: `${dataObj.from[0].token}`,
                 to: `+${toDataNumbers.number}`,
                 video: `${dataObj.file}`,
                 caption: `${dataObj.body}`,
             });
         } else if (dataObj.type === "audio") {
             data = qs.stringify({
-                token: `${dataObj.from.token}`,
+                token: `${dataObj.from[0].token}`,
                 to: `+${toDataNumbers.number}`,
                 audio: `${dataObj.file}`,
             });
         } else if (dataObj.type === "location") {
             data = qs.stringify({
-                token: `${dataObj.from.token}`,
+                token: `${dataObj.from[0].token}`,
                 to: `+${toDataNumbers.number}`,
                 address: `${dataObj.body}`,
                 lat: `${dataObj.lat}`,
