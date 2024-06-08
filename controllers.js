@@ -790,7 +790,7 @@ exports.ultramsgwebhook = async (req, res) => {
                 },
             },
 
-            message: messageMsg,
+            message: { $regex: new RegExp(messageMsg, "i") },
         };
         let dataObj = await db.collection("reply").findOne(query);
         console.log("************************************");
