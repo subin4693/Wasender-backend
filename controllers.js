@@ -793,6 +793,7 @@ exports.ultramsgwebhook = async (req, res) => {
             message: messageMsg,
         };
         let dataObj = await db.collection("reply").findOne(query);
+        console.log(dataObj);
         let toDataNumbers = dataObj.to;
         console.log(toDataNumbers);
 
