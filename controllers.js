@@ -765,8 +765,6 @@ exports.handleEditReply = async (req, res) => {
 
 exports.ultramsgwebhook = async (req, res) => {
     try {
-        console.log(req.body);
-
         const instanceId = "instance" + req.body.instanceId;
         const messageMsg = req.body["data"]["body"]; // Message text
         const from = req.body.data.to.split("@")[0].match(/\d+/g).join("");
@@ -793,12 +791,8 @@ exports.ultramsgwebhook = async (req, res) => {
             message: { $regex: new RegExp(messageMsg, "i") },
         };
         let dataObj = await db.collection("reply").findOne(query);
-        console.log("************************************");
-        console.log(dataObj);
-        console.log("************************************");
 
         let toDataNumbers = dataObj.to;
-        console.log(toDataNumbers);
 
         let data;
 
