@@ -108,7 +108,7 @@ exports.handleSetDevices = async (req, res) => {
             name: req.body.name,
             number: req.body.number,
             instanceID: "instance87295",
-            token: "sstdltegyIn6p9e",
+            token: "sstdltegyxln6p9e",
             deviceID: uniqid(),
             authenthicate: false,
             created: new Date(),
