@@ -793,7 +793,10 @@ exports.ultramsgwebhook = async (req, res) => {
             message: messageMsg,
         };
         let dataObj = await db.collection("reply").findOne(query);
+        console.log("************************************");
         console.log(dataObj);
+        console.log("************************************");
+
         let toDataNumbers = dataObj.to;
         console.log(toDataNumbers);
 
@@ -852,7 +855,7 @@ exports.ultramsgwebhook = async (req, res) => {
 
         let config = {
             method: "post",
-            url: `https://api.ultramsg.com/${dataObj.from.instanceID}/messages/${dataObj.type}`, //type
+            url: `https://api.ultramsg.com/${dataObj.from[0].instanceID}/messages/${dataObj.type}`, //type
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
