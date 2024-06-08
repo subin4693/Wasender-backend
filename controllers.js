@@ -782,10 +782,10 @@ exports.ultramsgwebhook = async (req, res) => {
         const db = client.db("WASender");
 
         const query = {
-            "to.number": from,
+            "to.number": to,
             from: {
                 $elemMatch: {
-                    number: to,
+                    number: from,
                     instanceID: instanceId,
                 },
             },
