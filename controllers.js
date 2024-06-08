@@ -422,6 +422,7 @@ exports.handleDeleteContacts = async (req, res) => {
         console.log("del fail");
     }
 };
+
 exports.handleSendMsg = (req, res) => {
     try {
         console.log(req.body);
@@ -753,6 +754,15 @@ exports.handleEditReply = async (req, res) => {
 
 //-----------------------------------------------------------------------------------------
 
+// {
+//   "to.number": '8903587556',
+
+//   from: {
+//     '$elemMatch': { number: '8925363686', instanceID: 'instance87295' }
+//   },
+//   message: 'hi'
+// }
+
 exports.ultramsgwebhook = async (req, res) => {
     try {
         console.log(req.body);
@@ -772,10 +782,10 @@ exports.ultramsgwebhook = async (req, res) => {
         const db = client.db("WASender");
 
         const query = {
-            "to.number": to,
+            "to.number": from,
             from: {
                 $elemMatch: {
-                    number: from,
+                    number: to,
                     instanceID: instanceId,
                 },
             },
