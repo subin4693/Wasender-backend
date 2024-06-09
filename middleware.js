@@ -16,6 +16,9 @@ exports.verifyToken = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRECT);
+        console.log("******************");
+        console.log(decoded.id, decoded.role);
+        console.log("******************");
 
         req.body.user = {
             id: decoded.id,
