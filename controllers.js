@@ -87,7 +87,7 @@ exports.handleSignUp = async (req, res) => {
                 "bearer " + token,
                 res.cookie("token", "bearer " + token, {
                     httpOnly: true,
-                    // secure: true,
+                    secure: false,
                     sameSite: "None",
                 }),
             );
@@ -143,9 +143,6 @@ exports.handleGetDevices = async (req, res) => {
     try {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");
-        console.log("get devides function called");
-        console.log(req.body);
-        console.log("get devides function called");
 
         let data = [];
 
