@@ -39,7 +39,12 @@ exports.handleSignin = async (req, res) => {
             process.env.JWT_SECRECT,
         );
 
-        res.cookie("token", "bearer " + token);
+        res.cookie("token", "bearer " + token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "None",
+        });
+
         await client.close();
         res.json({
             message: "signin success",
