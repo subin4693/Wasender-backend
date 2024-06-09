@@ -3,9 +3,6 @@ const jwt = require("jsonwebtoken");
 exports.verifyToken = async (req, res, next) => {
     try {
         const testToken = req.cookies.token;
-        console.log("middle ware function ********************************");
-        console.log(req.cookies);
-        console.log("middle ware function ********************************");
 
         let token;
         if (testToken && testToken.startsWith("bearer")) {
@@ -20,9 +17,6 @@ exports.verifyToken = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRECT);
-        console.log("******************");
-        console.log(decoded.id, decoded.role);
-        console.log("******************");
 
         req.body.user = {
             id: decoded.id,
