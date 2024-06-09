@@ -82,7 +82,12 @@ exports.handleSignUp = async (req, res) => {
                 { id: insertedUser._id, role: insertedUser.role },
                 process.env.JWT_SECRECT,
             );
-            res.cookie("token", "bearer " + token);
+            res.cookie("token", "bearer " + token,res.cookie("token", "bearer " + token, {
+              httpOnly: true, 
+              secure: true,   
+              sameSite: "None" 
+            });
+);
 
             await client.close();
             res.status(201).json({
