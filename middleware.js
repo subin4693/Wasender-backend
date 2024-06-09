@@ -2,9 +2,9 @@ const jwt = require("jsonwebtoken");
 
 exports.verifyToken = async (req, res, next) => {
     try {
-        const testToken = req.cookies?.token;
+        const testToken = req.cookies.token;
         console.log("middle ware function ********************************");
-        console.log(testToken);
+        console.log(req.cookies);
         console.log("middle ware function ********************************");
 
         let token;
