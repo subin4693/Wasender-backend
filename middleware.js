@@ -3,6 +3,10 @@ const jwt = require("jsonwebtoken");
 exports.verifyToken = async (req, res, next) => {
     try {
         const testToken = req.cookies?.token;
+        console.log("middle ware function ********************************");
+        console.log(testToken);
+        console.log("middle ware function ********************************");
+
         let token;
         if (testToken && testToken.startsWith("bearer")) {
             token = testToken.split(" ")[1];
