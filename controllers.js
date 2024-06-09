@@ -38,6 +38,7 @@ exports.handleSignin = async (req, res) => {
             { id: user._id, role: user.role },
             process.env.JWT_SECRECT,
         );
+        console.log(token);
         res.cookie("token", "bearer " + token);
         await client.close();
         res.json({
