@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 exports.verifyToken = async (req, res, next) => {
     try {
-        const testToken = req.cookies.token;
+        const testToken = req.cookies?.token;
         let token;
         if (testToken && testToken.startsWith("bearer")) {
             token = testToken.split(" ")[1];
@@ -25,6 +25,6 @@ exports.verifyToken = async (req, res, next) => {
         next();
     } catch (error) {
         console.log(error);
-        res.json(400).send({ message: "User not authendicated" });
+        return res.json(400).send({ message: "User not authendicated" });
     }
 };
