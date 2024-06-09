@@ -38,7 +38,7 @@ exports.handleSignin = async (req, res) => {
             { id: user._id, role: user.role },
             process.env.JWT_SECRECT,
         );
-        // res.cookie("token", "bearer " + token);
+        res.cookie("token", "bearer " + token);
         await client.close();
         res.json({
             message: "signin success",
@@ -102,9 +102,11 @@ exports.handleSetDevices = async (req, res) => {
     try {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");
+
         let dataObj = {
             admin: req.body?.admin,
             adminID: req.body?.adminID,
+            userId: req.body?.user?.id,
             name: req.body.name,
             number: req.body.number,
             instanceID: "instance87295",
@@ -132,10 +134,20 @@ exports.handleGetDevices = async (req, res) => {
     try {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");
-        let insertData = await db.collection("devices").find({}).toArray();
+
+        let data = [];
+
+        if (req.body.user.role === "admin")
+            data = await db.collection("devices").find({}).toArray();
+        else
+            data = await db
+                .collection("devices")
+                .find({ userId: req.body.user.id })
+                .toArray();
+
         await client.close();
         res.json({
-            arrData: insertData,
+            arrData: data,
             message: "receive Sucess",
         });
     } catch (err) {
