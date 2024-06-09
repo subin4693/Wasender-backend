@@ -84,7 +84,7 @@ exports.handleSignUp = async (req, res) => {
             );
             res.cookie("token", "bearer " + token,res.cookie("token", "bearer " + token, {
               httpOnly: true, 
-              secure: true,   
+              // secure: true,   
               sameSite: "None" 
             });
 );
