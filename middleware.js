@@ -3,10 +3,10 @@ const jwt = require("jsonwebtoken");
 exports.verifyToken = async (req, res, next) => {
     try {
         const testToken = req.cookies.token;
-        // console.log("token***************************");
-        // console.log(testToken);
+        console.log("token***************************");
+        console.log(testToken);
 
-        // console.log("token***************************");
+        console.log("token***************************");
 
         let token;
         if (testToken && testToken.startsWith("bearer")) {
