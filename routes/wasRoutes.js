@@ -24,7 +24,6 @@ const {
     handleSignUp,
     handleSignin,
 } = require("../controllers");
-const { verifyToken } = require("../middleware");
 
 const router = require("express").Router();
 
@@ -33,8 +32,8 @@ router.post("/signup", handleSignUp);
 router.post("/signin", handleSignin);
 
 //devices
-router.post("/setdevice", verifyToken, handleSetDevices);
-router.post("/getdevice", verifyToken, handleGetDevices);
+router.post("/setdevice", handleSetDevices);
+router.post("/getdevice", handleGetDevices);
 router.post("/qrcode", handleQrCode);
 router.post("/instance", handleInstance);
 router.post("/instancechange", handleInstanceChange);

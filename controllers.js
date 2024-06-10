@@ -39,15 +39,15 @@ exports.handleSignin = async (req, res) => {
             process.env.JWT_SECRECT,
         );
 
-        res.cookie(
-            "token",
-            "bearer " + token,
-            res.cookie("token", "bearer " + token, {
-                httpOnly: true,
-                secure: false,
-                sameSite: "None",
-            }),
-        );
+        // res.cookie(
+        //     "token",
+        //     "bearer " + token,
+        //     res.cookie("token", "bearer " + token, {
+        //         httpOnly: true,
+        //         secure: false,
+        //         sameSite: "None",
+        //     }),
+        // );
 
         await client.close();
         res.json({
@@ -84,27 +84,32 @@ exports.handleSignUp = async (req, res) => {
 
             const insertedUser = await collection.findOne(
                 { _id: result.insertedId },
-                { projection: { role: 1, email: 1 } },
+                { projection: { role: 1, email: 1, _id: 1 } },
             );
 
             const token = jwt.sign(
                 { id: insertedUser._id, role: insertedUser.role },
                 process.env.JWT_SECRECT,
             );
-            res.cookie(
-                "token",
-                "bearer " + token,
-                res.cookie("token", "bearer " + token, {
-                    httpOnly: true,
-                    secure: false,
-                    sameSite: "None",
-                }),
-            );
+            // res.cookie(
+            //     "token",
+            //     "bearer " + token,
+            //     res.cookie("token", "bearer " + token, {
+            //         httpOnly: true,
+            //         secure: false,
+            //         sameSite: "None",
+            //     }),
+            // );
+            const responseData = {
+                id: insertedUser._id,
+                email: insertedUser.email,
+                role: insertedUser.role,
+            };
 
             await client.close();
             res.status(201).json({
                 message: "signup success",
-                data: { ...insertedUser },
+                data: responseData,
             });
         }
     } catch (err) {
@@ -357,6 +362,7 @@ exports.handleSetContacts = async (req, res) => {
         let dataObj = {
             admin: req.body?.admin,
             adminID: req.body?.adminID,
+            userId: req.body?.user?.id,
             name: req.body.name,
             number: req.body.number,
             created: new Date(),
@@ -407,6 +413,7 @@ exports.handleBulkContacts = async (req, res) => {
         let dataObj = {
             admin: req.body?.admin,
             adminID: req.body?.adminID,
+            userId: req.body?.user?.id,
             name: req.body.name,
             number: req.body.number,
             created: new Date(),
@@ -422,10 +429,15 @@ exports.handleBulkContacts = async (req, res) => {
     }
 };
 exports.handleGetContacts = async (req, res) => {
+    console.log(req.body);
     try {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");
-        let getData = await db.collection("contacts").find({}).toArray();
+        let getData = await db
+            .collection("contacts")
+            .find({ userId: req.body.user.id })
+            .toArray();
+
         await client.close();
         res.json({
             msgArr: getData,
