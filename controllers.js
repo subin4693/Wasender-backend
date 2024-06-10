@@ -42,7 +42,7 @@ exports.handleSignin = async (req, res) => {
         res.cookie("token", "bearer " + token, {
             httpOnly: true,
             secure: false,
-            sameSite: "None",
+            // sameSite: "None",
         });
 
         await client.close();
