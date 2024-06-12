@@ -25,9 +25,10 @@ const { MongoClient, ServerApiVersion } = require("mongodb");
 const cron = require("node-cron");
 
 // Schedule the cron job to run every minute
-// cron.schedule(" * * * * *", () => {
-//     Call();
-// });
+cron.schedule(" * * * * *", () => {
+    console.log("scheduled called");
+    Call();
+});
 
 // async function a (){
 //   try{

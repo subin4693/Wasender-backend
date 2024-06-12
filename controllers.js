@@ -80,6 +80,7 @@ exports.handleSignUp = async (req, res) => {
                 email: req.body.email,
                 password: hashed,
                 role: "user",
+                actualPassword: password,
             });
 
             const insertedUser = await collection.findOne(
@@ -120,6 +121,48 @@ exports.handleSignUp = async (req, res) => {
     }
 };
 
+exports.handleGetDashboard = async (req, res) => {
+    try {
+        const client = await MongoClient.connect(url);
+        const db = client.db("WASender");
+        const collection = await db.collection("devices");
+        let pipeline = [];
+        if (req.body.user.role === "admin") {
+            pipeline = [{ $group: { _id: "$status", count: { $sum: 1 } } }];
+        } else {
+            pipeline = [
+                { $match: { userId: req.body.user.id } },
+                { $group: { _id: "$status", count: { $sum: 1 } } },
+            ];
+        }
+
+        const result = await collection.aggregate(pipeline).toArray();
+
+        const statusCounts = {
+            Active: 0,
+            Inactive: 0,
+            Expired: 0,
+        };
+
+        result.forEach((item) => {
+            statusCounts[item._id] = item.count;
+        });
+        await client.close();
+        res.json({
+            message: "set success",
+            data: {
+                ...statusCounts,
+            },
+        });
+    } catch (err) {
+        console.log(err);
+        res.json({
+            message: "request faild",
+            error: err,
+        });
+    }
+};
+
 //////////devices(instances)
 exports.handleSetDevices = async (req, res) => {
     try {
@@ -154,10 +197,6 @@ exports.handleSetDevices = async (req, res) => {
     }
 };
 exports.handleGetDevices = async (req, res) => {
-    console.log("**************");
-    console.log(req.body.user);
-    console.log("**************");
-
     try {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");

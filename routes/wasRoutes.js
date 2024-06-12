@@ -23,6 +23,7 @@ const {
     schedulerSave,
     handleSignUp,
     handleSignin,
+    handleGetDashboard,
 } = require("../controllers");
 
 const router = require("express").Router();
@@ -30,6 +31,8 @@ const router = require("express").Router();
 // Auth
 router.post("/signup", handleSignUp);
 router.post("/signin", handleSignin);
+// Dashboard
+router.post("/getdashboard", handleGetDashboard);
 
 //devices
 router.post("/setdevice", handleSetDevices);
