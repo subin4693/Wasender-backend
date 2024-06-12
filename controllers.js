@@ -154,6 +154,10 @@ exports.handleSetDevices = async (req, res) => {
     }
 };
 exports.handleGetDevices = async (req, res) => {
+    console.log("**************");
+    console.log(req.body.user);
+    console.log("**************");
+
     try {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");
@@ -433,10 +437,15 @@ exports.handleGetContacts = async (req, res) => {
     try {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");
-        let getData = await db
-            .collection("contacts")
-            .find({ userId: req.body.user.id })
-            .toArray();
+        let getData = [];
+
+        if (req.body.user.role === "admin")
+            getData = await db.collection("contacts").find({}).toArray();
+        else
+            getData = await db
+                .collection("contacts")
+                .find({ userId: req.body.user.id })
+                .toArray();
 
         await client.close();
         res.json({
