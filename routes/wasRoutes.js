@@ -24,6 +24,7 @@ const {
     handleSignUp,
     handleSignin,
     handleGetDashboard,
+    handleSetStatus,
 } = require("../controllers");
 
 const router = require("express").Router();
@@ -33,6 +34,7 @@ router.post("/signup", handleSignUp);
 router.post("/signin", handleSignin);
 // Dashboard
 router.post("/getdashboard", handleGetDashboard);
+router.post("/setStatus", handleSetStatus);
 
 //devices
 router.post("/setdevice", handleSetDevices);
