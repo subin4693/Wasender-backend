@@ -163,29 +163,6 @@ exports.handleGetDashboard = async (req, res) => {
     }
 };
 
-exports.handleSetStatus = async (req, res) => {
-    try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
-        if (!id || !status) {
-            return res
-                .status(400)
-                .send({ message: "id and status are required" });
-        }
-        const result = await db
-            .collection("devices")
-            .updateOne({ _id: new ObjectId(id) }, { $set: { status: status } });
-        if (result.matchedCount === 0) {
-            return res.status(404).send({ message: "Device not found" });
-        }
-        await client.close();
-        res.status(200).send({ message: "Status updated successfully" });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send({ message: "Internal Server Error" });
-    }
-};
-
 //////////devices(instances)
 exports.handleSetDevices = async (req, res) => {
     try {
@@ -279,6 +256,7 @@ exports.handleInstance = async (req, res) => {
                         {
                             $set: {
                                 authenthicate: true,
+                                status: "Active",
                             },
                         },
                     );
