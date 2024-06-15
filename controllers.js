@@ -740,9 +740,12 @@ exports.handleCreateReply = async (req, res) => {
     try {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");
+        console.log(req.body);
 
-        let dataObj = req.body;
-        await db.collection("reply").insertOne(dataObj);
+        let dataObj = req.body.dataObj;
+        await db
+            .collection("reply")
+            .insertOne({ ...dataObj, userId: req.body.user.id });
         await client.close();
         res.json({
             msg: "posted success",
@@ -758,10 +761,20 @@ exports.handleGetReply = async (req, res) => {
     try {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");
-        let getData = await db.collection("reply").find({}).toArray();
+        let data = [];
+        console.log(req.body.user);
+
+        if (req.body.user.role === "admin")
+            data = await db.collection("reply").find({}).toArray();
+        else
+            data = await db
+                .collection("reply")
+                .find({ userId: req.body.user.id })
+                .toArray();
+
         await client.close();
         res.json({
-            msg: getData,
+            msg: data,
         });
     } catch (err) {
         console.log(err);
