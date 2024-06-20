@@ -231,9 +231,11 @@ exports.handleCreateScheduler = async (req, res) => {
         console.log(req.body);
 
         let dataObj = req.body.dataObj;
-        await db
-            .collection("scheduled_messages")
-            .insertOne({ ...dataObj, userId: req.body.user.id });
+        await db.collection("scheduled_messages").insertOne({
+            ...dataObj,
+            status: "pending",
+            userId: req.body.user.id,
+        });
         await client.close();
         res.json({
             msg: "posted success",
@@ -330,7 +332,6 @@ exports.handleEditSch = async (req, res) => {
                         lat: dataObj.lat,
                         lng: dataObj.lng,
                         type: dataObj.type,
-                        status: "pending",
                     },
                 },
             );
