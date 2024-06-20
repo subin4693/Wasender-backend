@@ -21,6 +21,13 @@ const {
     handleEditReply,
     ultramsgwebhook,
     schedulerSave,
+    //Scheduler
+    handleCreateScheduler,
+    handleGetSch,
+    handleIdSch,
+    handleDeleteSch,
+    handleEditSch,
+
     handleSignUp,
     handleSignin,
     handleGetDashboard,
@@ -57,8 +64,14 @@ router.post("/createreply", handleCreateReply);
 router.post("/deletereply", handleDeleteReply);
 router.post("/idreply", handleIdReply);
 router.post("/editreply", handleEditReply);
-//
+//Scheduler
 router.post("/ultramsgwebhook", ultramsgwebhook);
 router.post("/schsendmsg", schedulerSave);
+
+router.post("/getsch", handleGetSch);
+router.post("/createsch", handleCreateScheduler);
+router.post("/deletesch", handleDeleteSch);
+router.post("/idsch", handleIdSch);
+router.post("/editsch", handleEditSch);
 
 module.exports = router;

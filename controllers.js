@@ -224,6 +224,127 @@ exports.handleGetDevices = async (req, res) => {
         });
     }
 };
+exports.handleCreateScheduler = async (req, res) => {
+    try {
+        const client = await MongoClient.connect(url);
+        const db = client.db("WASender");
+        console.log(req.body);
+
+        let dataObj = req.body.dataObj;
+        await db
+            .collection("scheduled_messages")
+            .insertOne({ ...dataObj, userId: req.body.user.id });
+        await client.close();
+        res.json({
+            msg: "posted success",
+        });
+    } catch (err) {
+        console.log(err);
+        res.json({
+            msg: err,
+        });
+    }
+};
+exports.handleGetSch = async (req, res) => {
+    try {
+        const client = await MongoClient.connect(url);
+        const db = client.db("WASender");
+        let data = [];
+        console.log(req.body.user);
+
+        if (req.body.user.role === "admin")
+            data = await db.collection("scheduled_messages").find({}).toArray();
+        else
+            data = await db
+                .collection("scheduled_messages")
+                .find({ userId: req.body.user.id })
+                .toArray();
+
+        await client.close();
+        res.json({
+            msg: data,
+        });
+    } catch (err) {
+        console.log(err);
+        res.json({
+            msg: err,
+        });
+    }
+};
+exports.handleIdSch = async (req, res) => {
+    try {
+        const client = await MongoClient.connect(url);
+        const db = client.db("WASender");
+        let getData = await db
+            .collection("scheduled_messages")
+            .findOne({ _id: new ObjectId(req.body.id) });
+        await client.close();
+        res.json({
+            msg: getData,
+        });
+    } catch (err) {
+        console.log(err);
+        res.json({
+            msg: err,
+        });
+    }
+};
+exports.handleDeleteSch = async (req, res) => {
+    try {
+        const client = await MongoClient.connect(url);
+        const db = client.db("WASender");
+        let dataObj = req.body;
+        let getData = await db
+            .collection("scheduled_messages")
+            .findOneAndDelete({ _id: new ObjectId(dataObj["_id"]) })
+            .toArray();
+        console.log(getData);
+        await client.close();
+        res.json({
+            msg: "delete",
+        });
+    } catch (err) {
+        console.log(err);
+        res.json({
+            msg: err,
+        });
+    }
+};
+exports.handleEditSch = async (req, res) => {
+    try {
+        const client = await MongoClient.connect(url);
+        const db = client.db("WASender");
+        const { dataObj, id } = req.body;
+        let postData = await db
+            .collection("scheduled_messages")
+            .findOneAndUpdate(
+                { _id: new ObjectId(id) },
+                {
+                    $set: {
+                        to: dataObj.to,
+                        from: dataObj.from,
+                        date: dataObj.date,
+                        file: dataObj.file?.toString(),
+                        fileName: dataObj.fileName,
+                        body: dataObj.body,
+                        lat: dataObj.lat,
+                        lng: dataObj.lng,
+                        type: dataObj.type,
+                        status: "pending",
+                    },
+                },
+            );
+        await client.close();
+        res.json({
+            msg: "edit success",
+        });
+    } catch (err) {
+        console.log(err);
+        res.json({
+            msg: err,
+        });
+    }
+};
 exports.handleInstance = async (req, res) => {
     try {
         let dataObj = req.body;
