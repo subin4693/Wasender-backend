@@ -197,6 +197,7 @@ exports.handleSetDevices = async (req, res) => {
     }
 };
 exports.handleGetDevices = async (req, res) => {
+    console.log("get devide function called");
     try {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");
@@ -226,68 +227,30 @@ exports.handleGetDevices = async (req, res) => {
 exports.handleInstance = async (req, res) => {
     try {
         let dataObj = req.body;
-        let config = {
-            method: "get",
-            url: `https://api.ultramsg.com/${dataObj.instanceID}/instance/status`,
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
+
+        console.log("authenthicated");
+        const client = await MongoClient.connect(url);
+        const db = client.db("WASender");
+        await db.collection("devices").findOneAndUpdate(
+            {
+                _id: new ObjectId(dataObj["_id"]),
             },
-            params: {
-                token: dataObj.token,
+            {
+                $set: {
+                    authenthicate: true,
+                    status: "Active",
+                },
             },
-        };
+        );
 
-        axios(config)
-            .then(async (response) => {
-                /////////
-                console.log(response?.data?.status);
-
-                if (
-                    response?.data?.status?.accountStatus?.status ===
-                    "authenticated"
-                ) {
-                    console.log("authenthicated");
-                    const client = await MongoClient.connect(url);
-                    const db = client.db("WASender");
-                    await db.collection("devices").findOneAndUpdate(
-                        {
-                            _id: new ObjectId(dataObj["_id"]),
-                        },
-                        {
-                            $set: {
-                                authenthicate: true,
-                                status: "Active",
-                            },
-                        },
-                    );
-
-                    await client.close();
-                    res.json({
-                        message: response?.data?.status?.accountStatus?.status,
-                    });
-                } else if (
-                    response?.data?.status?.accountStatus?.status === "standby"
-                ) {
-                    console.log("still in stanby");
-                    res.json({
-                        message: response?.data?.status?.accountStatus?.status,
-                    });
-                } else if (
-                    response?.data?.status?.accountStatus?.status === "loading"
-                ) {
-                    await this.handleInstance(req, res);
-                }
-
-                //////////
-            })
-            .catch((error) => {
-                res.json({
-                    message: "thirdParty Failure",
-                });
-            });
+        await client.close();
+        res.status(201).json({
+            message: "success",
+        });
     } catch (err) {
+        console.log("outer catch called");
         console.log(err);
-        res.json({
+        return res.json({
             message: "instance failure",
         });
     }
@@ -314,6 +277,7 @@ exports.handleInstanceChange = async (req, res) => {
                 {
                     $set: {
                         authenthicate: true,
+                        status: "Active",
                     },
                 },
             );
