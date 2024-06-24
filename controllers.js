@@ -1156,7 +1156,7 @@ exports.ultramsgwebhook = async (req, res) => {
                 }
             });
         });
-        conosle.log("final line executed");
+        console.log("final line executed");
         res.json({
             message: "sent",
         });
