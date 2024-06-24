@@ -1,4 +1,8 @@
 const uniqid = require("uniqid");
+// const {
+//     TextClassifier,
+//     FilesetResolver,
+// } = require("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-text@0.10.0");
 //const { MongoClient, ObjectId, ChangeStream } = require("mongodb");
 const { mongodb, ObjectId } = require("mongodb");
 const http = require("https");
@@ -6,6 +10,7 @@ const { MongoClient, ServerApiVersion } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const bcryptjs = require("bcryptjs");
 const dotenv = require("dotenv");
+
 dotenv.config();
 const url =
     "mongodb+srv://subin:Password@cluster0.tvgqpfe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -1006,6 +1011,7 @@ exports.handleEditReply = async (req, res) => {
 // }
 
 exports.ultramsgwebhook = async (req, res) => {
+    console.log("auto reply web hook called");
     try {
         const instanceId = "instance" + req.body.instanceId;
         const messageMsg = req.body["data"]["body"]; // Message text
@@ -1105,8 +1111,50 @@ exports.ultramsgwebhook = async (req, res) => {
             data: data,
         };
 
-        axios(config).then((ress) => {
+        axios(config).then(async (ress) => {
             console.log(ress.data); //*********************************************************************************************
+            async function sleep(ms) {
+                return new Promise((resolve) => setTimeout(resolve, ms));
+            }
+            const text = await FilesetResolver.forTextTasks(
+                "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-text@0.10.0/wasm",
+            );
+            const textClassifier = await TextClassifier.createFromOptions(
+                text,
+                {
+                    baseOptions: {
+                        modelAssetPath: `https://storage.googleapis.com/mediapipe-models/text_classifier/bert_classifier/float32/1/bert_classifier.tflite`,
+                    },
+                    maxResults: 5,
+                },
+            );
+            if (!textClassifier) {
+                console.error("Text classifier is not yet initialized.");
+                return;
+            }
+            if (message === "") {
+                alert(
+                    "Please write some text, or click 'Populate text' to add text",
+                );
+                return;
+            }
+            await sleep(500);
+            const result = textClassifier.classify(message);
+            let preditctResult = result.classifications[0].categories;
+
+            preditctResult.forEach((text) => {
+                if (text.categoryName === "positive") {
+                    console.log("Positive" + text.score);
+                    setType("Positive");
+                } else {
+                    console.log("Negative" + text.score);
+                    setType("Negative");
+                }
+                if (text.score * 100 >= 60) {
+                    console.log(text.score);
+                    //textToSpeech(text.categoryName);
+                }
+            });
         });
 
         res.json({
