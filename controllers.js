@@ -540,16 +540,31 @@ exports.handleBulkContacts = async (req, res) => {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");
 
-        let dataObj = {
-            admin: req.body?.admin,
-            adminID: req.body?.adminID,
-            userId: req.body?.user?.id,
-            name: req.body.name,
-            number: req.body.number,
-            created: new Date(),
-            contactID: uniqid(),
-        };
-        let insertData = await db.collection("contacts").insertOne(dataObj);
+        let data = [];
+
+        for (let i = 0; i < req.body.contacts.length; i++) {
+            data[i] = {
+                admin: req.body?.admin,
+                adminID: req.body?.adminID,
+                userId: req.body?.user?.id,
+                name: req.body?.contacts.name,
+                number: req.body.contacts.number,
+                created: new Date(),
+                contactID: uniqid(),
+            };
+        }
+        // let dataObj = {
+        //     admin: req.body?.admin,
+        //     adminID: req.body?.adminID,
+        //     userId: req.body?.user?.id,
+        //     name: req.body.name,
+        //     number: req.body.number,
+        //     created: new Date(),
+        //     contactID: uniqid(),
+        // };
+        let insertData = await db.collection("contacts").insertMany(data);
+        console.log(data);
+        console.log(insertData);
         await client.close();
         res.json({
             message: "set success",
@@ -682,58 +697,96 @@ exports.handleSendMsg = (req, res) => {
 };
 exports.handleImportBulk = async (req, res) => {
     try {
-        const params = {
-            token: "instance84036",
-        };
+        console.log(req.body);
+        const client = await MongoClient.connect(url);
+        const db = client.db("WASender");
 
-        const config = {
-            method: "get",
-            url: "https://api.ultramsg.com/instance84036/contacts",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            params: params,
-        };
+        let data = [];
 
-        await axios(config).then(async (obj) => {
-            let dataObj = [],
-                postObj = [];
+        for (let i = 0; i < req.body.contacts.length; i++) {
+            data[i] = {
+                admin: req.body?.admin,
+                adminID: req.body?.adminID,
+                userId: req.body?.user?.id,
+                name: req.body?.contacts[i]?.name,
+                number: req.body?.contacts[i]?.number,
+                created: new Date(),
+                contactID: uniqid(),
+            };
+        }
 
-            if (obj?.data.length) {
-                let arrObj = obj?.data;
-
-                for (let i = 0; i < arrObj.length; i++) {
-                    if (
-                        arrObj[i] &&
-                        !arrObj[i].isGroup &&
-                        arrObj[i].name &&
-                        arrObj[i].number
-                    ) {
-                        dataObj.push(arrObj[i]);
-                        postObj.push({
-                            name: arrObj[i].name,
-                            number: arrObj[i].number,
-                            created: new Date(),
-                            contactID: uniqid(),
-                            finalno: arrObj[i].number,
-                        });
-                    }
-                }
-
-                const client = await MongoClient.connect(url);
-                const db = client.db("WASender");
-                await db.collection("contacts").insertMany(postObj);
-                await client.close();
-                res.json({
-                    arrData: postObj,
-                    message: "success",
-                });
-                console.log("Success");
-            }
+        // let dataObj = {
+        //     admin: req.body?.admin,
+        //     adminID: req.body?.adminID,
+        //     userId: req.body?.user?.id,
+        //     name: req.body.name,
+        //     number: req.body.number,
+        //     created: new Date(),
+        //     contactID: uniqid(),
+        // };
+        let insertData = await db.collection("contacts").insertMany(data);
+        console.log(data);
+        console.log(insertData);
+        await client.close();
+        res.json({
+            message: "set success",
         });
     } catch (err) {
         console.log(err);
     }
+    // try {
+    //     const params = {
+    //         token: "instance84036",
+    //     };
+
+    //     const config = {
+    //         method: "get",
+    //         url: "https://api.ultramsg.com/instance84036/contacts",
+    //         headers: {
+    //             "Content-Type": "application/x-www-form-urlencoded",
+    //         },
+    //         params: params,
+    //     };
+
+    //     await axios(config).then(async (obj) => {
+    //         let dataObj = [],
+    //             postObj = [];
+
+    //         if (obj?.data.length) {
+    //             let arrObj = obj?.data;
+
+    //             for (let i = 0; i < arrObj.length; i++) {
+    //                 if (
+    //                     arrObj[i] &&
+    //                     !arrObj[i].isGroup &&
+    //                     arrObj[i].name &&
+    //                     arrObj[i].number
+    //                 ) {
+    //                     dataObj.push(arrObj[i]);
+    //                     postObj.push({
+    //                         name: arrObj[i].name,
+    //                         number: arrObj[i].number,
+    //                         created: new Date(),
+    //                         contactID: uniqid(),
+    //                         finalno: arrObj[i].number,
+    //                     });
+    //                 }
+    //             }
+
+    //             const client = await MongoClient.connect(url);
+    //             const db = client.db("WASender");
+    //             await db.collection("contacts").insertMany(postObj);
+    //             await client.close();
+    //             res.json({
+    //                 arrData: postObj,
+    //                 message: "success",
+    //             });
+    //             console.log("Success");
+    //         }
+    //     });
+    // } catch (err) {
+    //     console.log(err);
+    // }
 };
 exports.handleDuplicates = async (req, res) => {
     try {
@@ -1053,7 +1106,7 @@ exports.ultramsgwebhook = async (req, res) => {
         };
 
         axios(config).then((ress) => {
-            console.log(ress.data);
+            console.log(ress.data); //*********************************************************************************************
         });
 
         res.json({
