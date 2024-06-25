@@ -206,21 +206,44 @@ exports.handleGetDevices = async (req, res) => {
     try {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");
+        let page = req.query.page || 1;
+        let limit = req.query.limit || 3;
+        let skip = (page - 1) * limit;
 
         let data = [];
 
         if (req.body.user.role === "admin")
-            data = await db.collection("devices").find({}).toArray();
+            data = await db
+                .collection("devices")
+                .find({})
+                .skip(skip)
+                .limit(limit)
+                .toArray();
         else
             data = await db
                 .collection("devices")
                 .find({ userId: req.body.user.id })
+                .skip(skip)
+                .limit(limit)
                 .toArray();
+        const totalItems = await db
+            .collection("devices")
+            .countDocuments(
+                req.body.user.role === "admin"
+                    ? {}
+                    : { userId: req.body.user.id },
+            );
 
         await client.close();
         res.json({
             arrData: data,
             message: "receive Sucess",
+            pagination: {
+                totalItems,
+                currentPage: page,
+                totalPage: Math.ceil(totalItems / limit),
+                pageSize: limit,
+            },
         });
     } catch (err) {
         console.log(err);
