@@ -102,8 +102,9 @@ exports.Call = async () => {
     .find({ status: "pending", date: date.toISOString() })
     .sort({ date: 1 })
     .toArray();
-
+  console.log("********************************");
   console.log(getData);
+  console.log("***************************");
 
   //"2024-06-05T03:32:00.000Z"
   //  2024-06-05T03:31:00.960Z
@@ -164,10 +165,9 @@ exports.Call = async () => {
             lng: `${getData[i].lng}`,
           });
         }
-
         let config = {
           method: "post",
-          url: `https://api.ultramsg.com/${getData[i].instanceID}/messages/${getData[i].type}`, //type
+          url: `https://api.ultramsg.com/${getData[i].to.instanceID}/messages/${getData[i].type}`, //type
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
