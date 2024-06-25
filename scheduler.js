@@ -102,88 +102,94 @@ exports.Call = async () => {
     .find({ status: "pending", date: date.toISOString() })
     .sort({ date: 1 })
     .toArray();
-  console.log("********************************");
-  console.log(getData);
-  console.log("***************************");
 
   //"2024-06-05T03:32:00.000Z"
   //  2024-06-05T03:31:00.960Z
+  console.log(
+    "*******************************************************************************",
+  );
+  console.log(getData);
+  console.log(
+    "*******************************************************************************",
+  );
 
-  //   //console.log(getData[0]);
   if (getData[0]) {
     try {
       for (let i = 0; i < getData.length; i++) {
         console.log(getData[i]);
-        let data;
+        for (let j = 0; j < getData[i].to.length; j++) {
+          let data;
 
-        if (getData[i].type === "chat") {
-          data = qs.stringify({
-            token: `${getData[i].token}`,
-            to: `+${getData[i].to}`,
-            body: `${getData[i].body}`,
+          if (getData[i].type === "chat") {
+            data = qs.stringify({
+              token: `${getData[i].token}`,
+              to: `+${getData[i].to[j].number}`,
+              body: `${getData[i].body}`,
+            });
+          } else if (getData[i].type === "contact") {
+            data = qs.stringify({
+              token: `${getData[i].token}`,
+              to: `+${getData[i].to[j].number}`,
+              contact: `${getData[i].contact}@c.us`,
+            });
+          } else if (getData[i].type === "document") {
+            data = qs.stringify({
+              token: `${getData[i].token}`,
+              to: `+${getData[i].to[j].number}`,
+              filename: getData[i].fileName,
+              document: getData[i].file,
+              caption: getData[i].body,
+            });
+          } else if (getData[i].type === "image") {
+            data = qs.stringify({
+              token: `${getData[i].token}`,
+              to: `+${getData[i].to[j].number}`,
+              image: `${getData[i].file}`,
+              caption: `${getData[i].body}`,
+            });
+          } else if (getData[i].type === "video") {
+            data = qs.stringify({
+              token: `${getData[i].from.token}`,
+              to: `+${getData[i].to[j].number}`,
+              video: `${getData[i].file}`,
+              caption: `${getData[i].body}`,
+            });
+          } else if (getData[i].type === "audio") {
+            data = qs.stringify({
+              token: `${getData[i].token}`,
+              to: `+${getData[i].to[j].number}`,
+              audio: `${getData[i].audio}`,
+            });
+          } else if (getData[i].type === "location") {
+            data = qs.stringify({
+              token: `${getData[i].token}`,
+              to: `+${getData[i].to[j].number}`,
+              address: `${getData[i].address}`,
+              lat: `${getData[i].lat}`,
+              lng: `${getData[i].lng}`,
+            });
+          }
+          let config = {
+            method: "post",
+            url: `https://api.ultramsg.com/${getData[i].instanceID}/messages/${getData[i].type}`, //type
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            data: data,
+          };
+          console.log(config);
+
+          await axios(config).then((ress) => {
+            console.log(ress.data);
           });
-        } else if (getData[i].type === "contact") {
-          data = qs.stringify({
-            token: `${getData[i].token}`,
-            to: `+${getData[i].to}`,
-            contact: `${getData[i].contact}@c.us`,
-          });
-        } else if (getData[i].type === "document") {
-          data = qs.stringify({
-            token: `${getData[i].token}`,
-            to: `+${getData[i].to}`,
-            filename: getData[i].fileName,
-            document: getData[i].document,
-            caption: getData[i].caption,
-          });
-        } else if (getData[i].type === "image") {
-          data = qs.stringify({
-            token: `${getData[i].token}`,
-            to: `+${getData[i].to}`,
-            image: `${getData[i].image}`,
-            caption: `${getData[i].caption}`,
-          });
-        } else if (getData[i].type === "video") {
-          data = qs.stringify({
-            token: `${getData[i].from.token}`,
-            to: `+${getData[i].to}`,
-            video: `${getData[i].video}`,
-            caption: `${getData[i].caption}`,
-          });
-        } else if (getData[i].type === "audio") {
-          data = qs.stringify({
-            token: `${getData[i].token}`,
-            to: `+${getData[i].to}`,
-            audio: `${getData[i].audio}`,
-          });
-        } else if (getData[i].type === "location") {
-          data = qs.stringify({
-            token: `${getData[i].token}`,
-            to: `+${getData[i].to}`,
-            address: `${getData[i].address}`,
-            lat: `${getData[i].lat}`,
-            lng: `${getData[i].lng}`,
-          });
+
+          await db
+            .collection("scheduled_messages")
+            .findOneAndUpdate(
+              { _id: getData[i]._id },
+              { $set: { status: "sent" } },
+            );
         }
-        let config = {
-          method: "post",
-          url: `https://api.ultramsg.com/${getData[i].to.instanceID}/messages/${getData[i].type}`, //type
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          data: data,
-        };
-
-        await axios(config).then((ress) => {
-          console.log(ress.data);
-        });
-
-        await db
-          .collection("scheduled_messages")
-          .findOneAndUpdate(
-            { _id: getData[i]._id },
-            { $set: { status: "sent" } },
-          );
       }
     } catch (err) {
       console.log("error occured *****");

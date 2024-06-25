@@ -708,7 +708,7 @@ exports.handleImportBulk = async (req, res) => {
 
         let data = [];
 
-        for (let i = 0; i < req.body.contacts.length; i++) {
+        for (let i = 0; i < req.body?.contacts?.length; i++) {
             data[i] = {
                 admin: req.body?.admin,
                 adminID: req.body?.adminID,
