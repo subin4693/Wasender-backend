@@ -41,7 +41,7 @@ exports.handleSignin = async (req, res) => {
         }
         const token = jwt.sign(
             { id: user._id, role: user.role },
-            process.env.JWT_SECRECT
+            process.env.JWT_SECRECT,
         );
 
         // res.cookie(
@@ -91,12 +91,12 @@ exports.handleSignUp = async (req, res) => {
 
             const insertedUser = await collection.findOne(
                 { _id: result.insertedId },
-                { projection: { role: 1, email: 1, _id: 1 } }
+                { projection: { role: 1, email: 1, _id: 1 } },
             );
 
             const token = jwt.sign(
                 { id: insertedUser._id, role: insertedUser.role },
-                process.env.JWT_SECRECT
+                process.env.JWT_SECRECT,
             );
             // res.cookie(
             //     "token",
@@ -248,7 +248,7 @@ exports.handleGetDevices = async (req, res) => {
             .countDocuments(
                 req.body.user.role === "admin"
                     ? {}
-                    : { userId: req.body.user.id }
+                    : { userId: req.body.user.id },
             );
 
         // await client.close();
@@ -328,7 +328,7 @@ exports.handleGetSch = async (req, res) => {
             .countDocuments(
                 req.body.user.role == "admin"
                     ? {}
-                    : { userId: req.body.user.id }
+                    : { userId: req.body.user.id },
             );
 
         // await client.close();
@@ -411,7 +411,7 @@ exports.handleEditSch = async (req, res) => {
                         lng: dataObj.lng,
                         type: dataObj.type,
                     },
-                }
+                },
             );
         // await client.close();
         res.json({
@@ -441,7 +441,7 @@ exports.handleInstance = async (req, res) => {
                     authenthicate: true,
                     status: "Active",
                 },
-            }
+            },
         );
 
         // await client.close();
@@ -481,7 +481,7 @@ exports.handleInstanceChange = async (req, res) => {
                         authenthicate: true,
                         status: "Active",
                     },
-                }
+                },
             );
         }
         // await client.close();
@@ -606,7 +606,7 @@ exports.handleEditContacts = async (req, res) => {
                     number: req.body.dataObj.number,
                 },
             },
-            { new: true }
+            { new: true },
         );
         // await client.close();
         res.json({
@@ -697,7 +697,7 @@ exports.handleGetContacts = async (req, res) => {
             .countDocuments(
                 req.body.user.role === "admin"
                     ? {}
-                    : { userId: req.body.user.id }
+                    : { userId: req.body.user.id },
             );
 
         // await client.close();
@@ -974,7 +974,7 @@ exports.handleLogChats = async (req, res) => {
         console.log(
             fromSelect.token,
             `${toSelect.number}@c.us`,
-            fromSelect.instanceID
+            fromSelect.instanceID,
         );
         let params = {
             token: fromSelect.token,
@@ -1053,7 +1053,7 @@ exports.handleGetReply = async (req, res) => {
             .countDocuments(
                 req.body.user.role === "admin"
                     ? {}
-                    : { userId: req.body.user.id }
+                    : { userId: req.body.user.id },
             );
 
         // await client.close();
@@ -1134,7 +1134,7 @@ exports.handleEditReply = async (req, res) => {
                     lng: dataObj.lng,
                     type: dataObj.type,
                 },
-            }
+            },
         );
         // await client.close();
         res.json({
@@ -1263,12 +1263,15 @@ exports.ultramsgwebhook = async (req, res) => {
         console.log("message posted");
 
         axios(config).then(async (ress) => {
-            console.log("****************************************");
-            console.log(ress.data); //*********************************************************************************************
-            console.log("****************************************");
-
             const text = await FilesetResolver.forTextTasks(
-                "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-text@0.10.0/wasm"
+                "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-text@0.10.0/wasm",
+            );
+            console.log(
+                "*********************************************text **************************************************",
+            );
+            console.log(text);
+            console.log(
+                "*********************************************text **************************************************",
             );
 
             const textClassifier = await TextClassifier.createFromOptions(
@@ -1278,21 +1281,42 @@ exports.ultramsgwebhook = async (req, res) => {
                         modelAssetPath: `https://storage.googleapis.com/mediapipe-models/text_classifier/bert_classifier/float32/1/bert_classifier.tflite`,
                     },
                     maxResults: 5,
-                }
+                },
             );
+            console.log(
+                "*********************************************textClassifier **************************************************",
+            );
+            console.log(textClassifier);
+            console.log(
+                "*********************************************textClassifier **************************************************",
+            );
+
             if (!textClassifier) {
                 console.error("Text classifier is not yet initialized.");
                 return;
             }
             if (data.body === "") {
-                alert(
-                    "Please write some text, or click 'Populate text' to add text"
-                );
+                console.error("provide a message");
                 return;
             }
 
             const result = textClassifier.classify(data.body);
+            console.log(
+                "*********************************************result **************************************************",
+            );
+            console.log(result);
+            console.log(
+                "*********************************************result **************************************************",
+            );
+
             let preditctResult = result.classifications[0].categories;
+            console.log(
+                "*********************************************preditctResult **************************************************",
+            );
+            console.log(preditctResult);
+            console.log(
+                "*********************************************preditctResult **************************************************",
+            );
 
             preditctResult.forEach((text) => {
                 if (text.categoryName === "positive") {
