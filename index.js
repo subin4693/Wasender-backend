@@ -13,6 +13,7 @@ const { Call } = require("./scheduler.js");
 const port = process.env.PORT || 5000;
 const mongodb = require("mongodb");
 const { MongoClient, ServerApiVersion } = require("mongodb");
+const { connectToDatabase, closeDatabaseConnection } = require("./db");
 
 // const url = "mongodb+srv://sharukajmal2:sharukdb@cluster0.cfzoga8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 // const url = "mongodb://127.0.0.1:27017/WASender";
@@ -70,4 +71,14 @@ app.use("/ablelyfwas", routez);
 app.use(bodyParser.json());
 app.listen(port, () => {
     console.log("app wasrendereing", port);
+});
+
+process.on("SIGINT", async () => {
+    await closeDatabaseConnection();
+    process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+    await closeDatabaseConnection();
+    process.exit(0);
 });

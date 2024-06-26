@@ -1,4 +1,5 @@
 const { MongoClient, ServerApiVersion } = require("mongodb");
+const { connectToDatabase } = require("./db");
 const url =
   "mongodb+srv://subin:Password@cluster0.tvgqpfe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 var qs = require("querystring");
@@ -87,8 +88,9 @@ exports.handleSendMsg = (req, res) => {
 };
 
 exports.Call = async () => {
-  const client = new MongoClient(url);
-  const db = await client.db("WASender");
+  // const client = new MongoClient(url);
+  // const db = await client.db("WASender");
+  const db = await connectToDatabase();
   // // var schdate= new Date().toISOString();
   // // console.log(schdate);
   let date = new Date();
@@ -194,5 +196,5 @@ exports.Call = async () => {
   } else {
     console.log("nothing");
   }
-  client.close();
+  // client.close();
 };

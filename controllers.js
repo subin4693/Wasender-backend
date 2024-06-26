@@ -1,3 +1,4 @@
+const { connectToDatabase } = require("./db");
 const uniqid = require("uniqid");
 // const {
 //     TextClassifier,
@@ -27,8 +28,9 @@ const nodeBase64 = require("nodejs-base64-converter");
 exports.handleSignin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
         const collection = db.collection("users");
 
         const user = await collection.findOne({ email });
@@ -36,7 +38,7 @@ exports.handleSignin = async (req, res) => {
         const match = await bcryptjs.compare(password, user.password);
 
         if (!match) {
-            await client.close();
+            // await client.close();
             return res.json({ message: "signin failed" });
         }
         const token = jwt.sign(
@@ -54,7 +56,7 @@ exports.handleSignin = async (req, res) => {
         //     }),
         // );
 
-        await client.close();
+        // await client.close();
         res.json({
             message: "signin success",
             data: { id: user._id, email: user.email, role: user.role },
@@ -71,13 +73,14 @@ exports.handleSignUp = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
         const collection = db.collection("users");
         let mailList = await collection.findOne({ email });
 
         if (mailList) {
-            await client.close();
+            // await client.close();
             return res.status(400).json({ message: "User already exists" });
         } else {
             const hashed = await bcryptjs.hash(password, 8);
@@ -112,7 +115,7 @@ exports.handleSignUp = async (req, res) => {
                 role: insertedUser.role,
             };
 
-            await client.close();
+            // await client.close();
             res.status(201).json({
                 message: "signup success",
                 data: responseData,
@@ -128,8 +131,9 @@ exports.handleSignUp = async (req, res) => {
 
 exports.handleGetDashboard = async (req, res) => {
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
         const collection = await db.collection("devices");
         let pipeline = [];
         if (req.body.user.role === "admin") {
@@ -152,7 +156,7 @@ exports.handleGetDashboard = async (req, res) => {
         result.forEach((item) => {
             statusCounts[item._id] = item.count;
         });
-        await client.close();
+        // await client.close();
         res.json({
             message: "set success",
             data: {
@@ -171,8 +175,9 @@ exports.handleGetDashboard = async (req, res) => {
 //////////devices(instances)
 exports.handleSetDevices = async (req, res) => {
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
 
         let dataObj = {
             admin: req.body?.admin,
@@ -190,7 +195,7 @@ exports.handleSetDevices = async (req, res) => {
             status: "Inactive",
         };
         await db.collection("devices").insertOne(dataObj);
-        await client.close();
+        // await client.close();
         res.json({
             message: "set success",
         });
@@ -203,8 +208,9 @@ exports.handleSetDevices = async (req, res) => {
 };
 exports.handleGetDevices = async (req, res) => {
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        //        const client = await MongoClient.connect(url);
+        //      const db = client.db("WASender");
+        const db = await connectToDatabase();
         let page = req.query.page || 1;
         let limit = req.query.limit || 3;
         let skip = (page - 1) * limit;
@@ -247,7 +253,7 @@ exports.handleGetDevices = async (req, res) => {
                     : { userId: req.body.user.id },
             );
 
-        await client.close();
+        // await client.close();
         res.json({
             arrData: data,
             message: "receive Sucess",
@@ -270,8 +276,9 @@ exports.handleGetDevices = async (req, res) => {
 };
 exports.handleCreateScheduler = async (req, res) => {
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
         console.log(req.body);
 
         let dataObj = req.body.dataObj;
@@ -280,7 +287,7 @@ exports.handleCreateScheduler = async (req, res) => {
             status: "pending",
             userId: req.body.user.id,
         });
-        await client.close();
+        // await client.close();
         res.json({
             msg: "posted success",
         });
@@ -293,8 +300,9 @@ exports.handleCreateScheduler = async (req, res) => {
 };
 exports.handleGetSch = async (req, res) => {
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
 
         let limit = req.query.limit || 3;
         let page = req.query.page || 1;
@@ -325,7 +333,7 @@ exports.handleGetSch = async (req, res) => {
                     : { userId: req.body.user.id },
             );
 
-        await client.close();
+        // await client.close();
         res.json({
             msg: data,
             pagination: {
@@ -344,12 +352,13 @@ exports.handleGetSch = async (req, res) => {
 };
 exports.handleIdSch = async (req, res) => {
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
         let getData = await db
             .collection("scheduled_messages")
             .findOne({ _id: new ObjectId(req.body.id) });
-        await client.close();
+        // await client.close();
         res.json({
             msg: getData,
         });
@@ -362,15 +371,16 @@ exports.handleIdSch = async (req, res) => {
 };
 exports.handleDeleteSch = async (req, res) => {
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
         let dataObj = req.body;
         let getData = await db
             .collection("scheduled_messages")
             .findOneAndDelete({ _id: new ObjectId(dataObj["_id"]) })
             .toArray();
         console.log(getData);
-        await client.close();
+        // await client.close();
         res.json({
             msg: "delete",
         });
@@ -383,8 +393,9 @@ exports.handleDeleteSch = async (req, res) => {
 };
 exports.handleEditSch = async (req, res) => {
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
         const { dataObj, id } = req.body;
         let postData = await db
             .collection("scheduled_messages")
@@ -404,7 +415,7 @@ exports.handleEditSch = async (req, res) => {
                     },
                 },
             );
-        await client.close();
+        // await client.close();
         res.json({
             msg: "edit success",
         });
@@ -420,8 +431,9 @@ exports.handleInstance = async (req, res) => {
         let dataObj = req.body;
 
         console.log("authenthicated");
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
         await db.collection("devices").findOneAndUpdate(
             {
                 _id: new ObjectId(dataObj["_id"]),
@@ -434,7 +446,7 @@ exports.handleInstance = async (req, res) => {
             },
         );
 
-        await client.close();
+        // await client.close();
         res.status(201).json({
             message: "success",
         });
@@ -457,8 +469,9 @@ const handleInsStatus = () => {
 exports.handleInstanceChange = async (req, res) => {
     try {
         let { dataObj, type } = req.body;
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
         console.log(dataObj, type);
         if (type === "status") {
             await db.collection("devices").findOneAndUpdate(
@@ -473,7 +486,7 @@ exports.handleInstanceChange = async (req, res) => {
                 },
             );
         }
-        await client.close();
+        // await client.close();
         res.json({
             message: `${type} changed`,
         });
@@ -555,8 +568,9 @@ exports.handleQrCode = async (req, res) => {
 
 exports.handleSetContacts = async (req, res) => {
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
 
         let dataObj = {
             admin: req.body?.admin,
@@ -568,7 +582,7 @@ exports.handleSetContacts = async (req, res) => {
             contactID: uniqid(),
         };
         await db.collection("contacts").insertOne(dataObj);
-        await client.close();
+        // await client.close();
         res.json({
             message: "set success",
         });
@@ -582,8 +596,9 @@ exports.handleSetContacts = async (req, res) => {
 exports.handleEditContacts = async (req, res) => {
     try {
         console.log(req.body.dataObj, req.body.contact);
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
 
         await db.collection("contacts").findOneAndUpdate(
             { contactID: req.body.contact.contactID },
@@ -595,7 +610,7 @@ exports.handleEditContacts = async (req, res) => {
             },
             { new: true },
         );
-        await client.close();
+        // await client.close();
         res.json({
             message: "update success",
         });
@@ -606,8 +621,9 @@ exports.handleEditContacts = async (req, res) => {
 exports.handleBulkContacts = async (req, res) => {
     try {
         console.log(req.body);
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
 
         let data = [];
 
@@ -634,7 +650,7 @@ exports.handleBulkContacts = async (req, res) => {
         let insertData = await db.collection("contacts").insertMany(data);
         console.log(data);
         console.log(insertData);
-        await client.close();
+        // await client.close();
         res.json({
             message: "set success",
         });
@@ -643,15 +659,15 @@ exports.handleBulkContacts = async (req, res) => {
     }
 };
 exports.handleGetContacts = async (req, res) => {
-    console.log(req.body);
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
         let limit = req.query.limit || 3;
         let page = req.query.page || 1;
         let skip = (page - 1) * limit;
         const pagenate = req.query.pagenate;
-        console.log(page);
+
         let getData = [];
 
         if (req.body.user.role === "admin") {
@@ -665,13 +681,6 @@ exports.handleGetContacts = async (req, res) => {
             else getData = await db.collection("contacts").find({}).toArray();
         } else {
             if (pagenate === "true") {
-                console.log("this if part works");
-                console.log({
-                    limit,
-                    page,
-                    skip,
-                    pagenate,
-                });
                 getData = await db
                     .collection("contacts")
                     .find({ userId: req.body.user.id })
@@ -692,8 +701,8 @@ exports.handleGetContacts = async (req, res) => {
                     ? {}
                     : { userId: req.body.user.id },
             );
-        console.log(getData);
-        await client.close();
+
+        // await client.close();
         res.json({
             msgArr: getData,
             pagination:
@@ -712,14 +721,15 @@ exports.handleGetContacts = async (req, res) => {
 };
 exports.handleDeleteContacts = async (req, res) => {
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
 
         console.log(req.body);
         await db
             .collection("contacts")
             .deleteOne({ contactID: req.body.data.contactID });
-        await client.close();
+        // await client.close();
         res.json({
             msgArr: "del success",
         });
@@ -812,8 +822,9 @@ exports.handleSendMsg = (req, res) => {
 exports.handleImportBulk = async (req, res) => {
     try {
         console.log(req.body);
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
 
         let data = [];
 
@@ -841,7 +852,7 @@ exports.handleImportBulk = async (req, res) => {
         let insertData = await db.collection("contacts").insertMany(data);
         console.log(data);
         console.log(insertData);
-        await client.close();
+        // await client.close();
         res.json({
             message: "set success",
         });
@@ -890,7 +901,7 @@ exports.handleImportBulk = async (req, res) => {
     //             const client = await MongoClient.connect(url);
     //             const db = client.db("WASender");
     //             await db.collection("contacts").insertMany(postObj);
-    //             await client.close();
+    await client.close();
     //             res.json({
     //                 arrData: postObj,
     //                 message: "success",
@@ -904,8 +915,9 @@ exports.handleImportBulk = async (req, res) => {
 };
 exports.handleDuplicates = async (req, res) => {
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
         let getData = await db.collection("contacts").find({}).toArray();
         let arrObj = [];
 
@@ -920,7 +932,7 @@ exports.handleDuplicates = async (req, res) => {
             }
         }
 
-        await client.close();
+        // await client.close();
         res.json({
             message: "duplicates deleted",
         });
@@ -991,15 +1003,16 @@ exports.handleLogChats = async (req, res) => {
 };
 exports.handleCreateReply = async (req, res) => {
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
         console.log(req.body);
 
         let dataObj = req.body.dataObj;
         await db
             .collection("reply")
             .insertOne({ ...dataObj, userId: req.body.user.id });
-        await client.close();
+        // await client.close();
         res.json({
             msg: "posted success",
         });
@@ -1012,8 +1025,9 @@ exports.handleCreateReply = async (req, res) => {
 };
 exports.handleGetReply = async (req, res) => {
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
         let page = req.query.page || 1;
         let limit = req.query.limit || 2;
         let skip = (page - 1) * limit;
@@ -1043,7 +1057,7 @@ exports.handleGetReply = async (req, res) => {
                     : { userId: req.body.user.id },
             );
 
-        await client.close();
+        // await client.close();
         res.json({
             msg: data,
             pagination: {
@@ -1062,12 +1076,13 @@ exports.handleGetReply = async (req, res) => {
 };
 exports.handleIdReply = async (req, res) => {
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
         let getData = await db
             .collection("reply")
             .findOne({ _id: new ObjectId(req.body.id) });
-        await client.close();
+        // await client.close();
         res.json({
             msg: getData,
         });
@@ -1080,15 +1095,16 @@ exports.handleIdReply = async (req, res) => {
 };
 exports.handleDeleteReply = async (req, res) => {
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
         let dataObj = req.body;
         let getData = await db
             .collection("reply")
             .findOneAndDelete({ _id: new ObjectId(dataObj["_id"]) })
             .toArray();
         console.log(getData);
-        await client.close();
+        // await client.close();
         res.json({
             msg: "delete",
         });
@@ -1101,8 +1117,9 @@ exports.handleDeleteReply = async (req, res) => {
 };
 exports.handleEditReply = async (req, res) => {
     try {
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
         const { dataObj, id } = req.body;
         let postData = await db.collection("reply").findOneAndUpdate(
             { _id: new ObjectId(id) },
@@ -1120,7 +1137,7 @@ exports.handleEditReply = async (req, res) => {
                 },
             },
         );
-        await client.close();
+        // await client.close();
         res.json({
             msg: "edit success",
         });
@@ -1297,7 +1314,7 @@ exports.ultramsgwebhook = async (req, res) => {
         ////////       _id: 1,
         ////////       text: messageMsg
         ////////           });
-        ////////   await client.close();
+        //////   await client.close();
 
         // let insertData = await db.collection("trigger").findOne({});
 
@@ -1322,7 +1339,7 @@ exports.ultramsgwebhook = async (req, res) => {
                     _id: 1,
                     text: messageMsg,
                 });
-                await client.close();
+                // await client.close();
             } else {
                 invalidBot();
                 res.status(200).end();
@@ -1571,8 +1588,9 @@ exports.schedulerSave = async (req, res) => {
         //console.log(dataObj);
         let toDataNumbers = dataObj.to;
         //console.log(toDataNumbers);
-        const client = await MongoClient.connect(url);
-        const db = client.db("WASender");
+        // const client = await MongoClient.connect(url);
+        // const db = client.db("WASender");
+        const db = await connectToDatabase();
 
         for (let i = 0; i < toDataNumbers.length; i++) {
             let data;
@@ -1659,7 +1677,7 @@ exports.schedulerSave = async (req, res) => {
             await db.collection("scheduled_messages").insertOne(data);
         }
 
-        await client.close();
+        // await client.close();
         res.json({
             msgArr: "Messages Scheduled",
         });
