@@ -1,9 +1,7 @@
 const { connectToDatabase } = require("./db");
 const uniqid = require("uniqid");
-// const {
-//     TextClassifier,
-//     FilesetResolver,
-// } = require("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-text@0.10.0");
+const { TextClassifier, FilesetResolver } = require("@mediapipe/tasks-text");
+
 //const { MongoClient, ObjectId, ChangeStream } = require("mongodb");
 const { mongodb, ObjectId } = require("mongodb");
 const http = require("https");
@@ -972,6 +970,7 @@ exports.handleLogMessages = async (req, res) => {
 exports.handleLogChats = async (req, res) => {
     try {
         let { fromSelect, toSelect } = req.body;
+        console.log(toSelect);
         console.log(
             fromSelect.token,
             `${toSelect.number}@c.us`,
@@ -1260,6 +1259,7 @@ exports.ultramsgwebhook = async (req, res) => {
             },
             data: data,
         };
+        console.log("message posted");
 
         axios(config).then(async (ress) => {
             console.log(ress.data); //*********************************************************************************************

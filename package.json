@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@mediapipe/tasks-text": "^0.10.0",
+    "@mediapipe/tasks-text": "^0.10.14",
     "@ngrok/ngrok": "^1.0.0",
     "axios": "^1.6.7",
     "bcryptjs": "^2.4.3",
