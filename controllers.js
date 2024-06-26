@@ -202,7 +202,6 @@ exports.handleSetDevices = async (req, res) => {
     }
 };
 exports.handleGetDevices = async (req, res) => {
-    console.log("get devide function called");
     try {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");
@@ -210,22 +209,36 @@ exports.handleGetDevices = async (req, res) => {
         let limit = req.query.limit || 3;
         let skip = (page - 1) * limit;
 
+        const pagenate = req.query.pagenate;
+
         let data = [];
 
-        if (req.body.user.role === "admin")
-            data = await db
-                .collection("devices")
-                .find({})
-                .skip(skip)
-                .limit(limit)
-                .toArray();
-        else
-            data = await db
-                .collection("devices")
-                .find({ userId: req.body.user.id })
-                .skip(skip)
-                .limit(limit)
-                .toArray();
+        if (req.body.user.role === "admin") {
+            if (pagenate === "true") {
+                data = await db
+                    .collection("devices")
+                    .find({})
+                    .skip(skip)
+                    .limit(limit)
+                    .toArray();
+            } else {
+                data = await db.collection("devices").find({}).toArray();
+            }
+        } else {
+            if (pagenate === "true")
+                data = await db
+                    .collection("devices")
+                    .find({ userId: req.body.user.id })
+                    .skip(skip)
+                    .limit(limit)
+                    .toArray();
+            else {
+                data = await db
+                    .collection("devices")
+                    .find({ userId: req.body.user.id })
+                    .toArray();
+            }
+        }
         const totalItems = await db
             .collection("devices")
             .countDocuments(
@@ -238,12 +251,15 @@ exports.handleGetDevices = async (req, res) => {
         res.json({
             arrData: data,
             message: "receive Sucess",
-            pagination: {
-                totalItems,
-                currentPage: page,
-                totalPage: Math.ceil(totalItems / limit),
-                pageSize: limit,
-            },
+            pagination:
+                pagenate === "true"
+                    ? {
+                          totalItems,
+                          currentPage: page,
+                          totalPage: Math.ceil(totalItems / limit),
+                          pageSize: limit,
+                      }
+                    : null,
         });
     } catch (err) {
         console.log(err);
@@ -279,20 +295,45 @@ exports.handleGetSch = async (req, res) => {
     try {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");
-        let data = [];
-        console.log(req.body.user);
 
+        let limit = req.query.limit || 3;
+        let page = req.query.page || 1;
+        let skip = (page - 1) * limit;
+
+        let data = [];
+        console.log("scheduled called");
         if (req.body.user.role === "admin")
-            data = await db.collection("scheduled_messages").find({}).toArray();
+            data = await db
+                .collection("scheduled_messages")
+                .find({})
+                .skip(skip)
+                .limit(limit)
+                .toArray();
         else
             data = await db
                 .collection("scheduled_messages")
                 .find({ userId: req.body.user.id })
+                .skip(skip)
+                .limit(limit)
                 .toArray();
+
+        const totalItems = await db
+            .collection("scheduled_messages")
+            .countDocuments(
+                req.body.user.role == "admin"
+                    ? {}
+                    : { userId: req.body.user.id },
+            );
 
         await client.close();
         res.json({
             msg: data,
+            pagination: {
+                totalItems,
+                currentPage: page,
+                totalPage: Math.ceil(totalItems / limit),
+                pageSize: limit,
+            },
         });
     } catch (err) {
         console.log(err);
@@ -606,19 +647,58 @@ exports.handleGetContacts = async (req, res) => {
     try {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");
+        let limit = req.params.limit || 3;
+        let page = req.params.page || 1;
+        let skip = (page - 1) * limit;
+        const pagenate = req.query.pagenate;
+
         let getData = [];
 
-        if (req.body.user.role === "admin")
-            getData = await db.collection("contacts").find({}).toArray();
-        else
-            getData = await db
-                .collection("contacts")
-                .find({ userId: req.body.user.id })
-                .toArray();
+        if (req.body.user.role === "admin") {
+            if (pagenate === "true")
+                getData = await db
+                    .collection("contacts")
+                    .find({})
+                    .skip(skip)
+                    .limit(limit)
+                    .toArray();
+            else getData = await db.collection("contacts").find({}).toArray();
+        } else {
+            if (pagenate === "true")
+                getData = await db
+                    .collection("contacts")
+                    .find({ userId: req.body.user.id })
+                    .skip(skip)
+                    .limit(limit)
+                    .toArray();
+            else
+                getData = await db
+                    .collection("contacts")
+                    .find({ userId: req.body.user.id })
+
+                    .toArray();
+        }
+
+        const totalItems = await db
+            .collection("contacts")
+            .countDocuments(
+                req.body.user.role === "admin"
+                    ? {}
+                    : { userId: req.body.user.id },
+            );
 
         await client.close();
         res.json({
             msgArr: getData,
+            pagination:
+                pagenate === "true"
+                    ? {
+                          totalItems,
+                          currentPage: page,
+                          totalpage: Math.ceil(totalItems / limit),
+                          pageSize: limit,
+                      }
+                    : null,
         });
     } catch (err) {
         console.log(err);
@@ -928,20 +1008,44 @@ exports.handleGetReply = async (req, res) => {
     try {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");
+        let page = req.query.page || 1;
+        let limit = req.query.limit || 2;
+        let skip = (page - 1) * limit;
+
         let data = [];
-        console.log(req.body.user);
 
         if (req.body.user.role === "admin")
-            data = await db.collection("reply").find({}).toArray();
+            data = await db
+                .collection("reply")
+                .find({})
+                .skip(skip)
+                .limit(limit)
+                .toArray();
         else
             data = await db
                 .collection("reply")
                 .find({ userId: req.body.user.id })
+                .skip(skip)
+                .limit(limit)
                 .toArray();
+
+        const totalItems = await db
+            .collection("reply")
+            .countDocuments(
+                req.body.user.role === "admin"
+                    ? {}
+                    : { userId: req.body.user.id },
+            );
 
         await client.close();
         res.json({
             msg: data,
+            pagination: {
+                totalItems,
+                currentPage: page,
+                totalPage: Math.ceil(totalItems / limit),
+                pageSize: limit,
+            },
         });
     } catch (err) {
         console.log(err);
