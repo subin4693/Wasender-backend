@@ -1195,6 +1195,10 @@ exports.ultramsgwebhook = async (req, res) => {
 
         console.log(dataObj);
         console.log("******************************");
+        if (!dataObj) {
+            console.log("there is no data in database");
+            return;
+        }
 
         let toDataNumbers = dataObj?.to;
 
