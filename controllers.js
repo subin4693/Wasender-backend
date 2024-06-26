@@ -647,11 +647,11 @@ exports.handleGetContacts = async (req, res) => {
     try {
         const client = await MongoClient.connect(url);
         const db = client.db("WASender");
-        let limit = req.params.limit || 3;
-        let page = req.params.page || 1;
+        let limit = req.query.limit || 3;
+        let page = req.query.page || 1;
         let skip = (page - 1) * limit;
         const pagenate = req.query.pagenate;
-
+        console.log(page);
         let getData = [];
 
         if (req.body.user.role === "admin") {
@@ -664,18 +664,24 @@ exports.handleGetContacts = async (req, res) => {
                     .toArray();
             else getData = await db.collection("contacts").find({}).toArray();
         } else {
-            if (pagenate === "true")
+            if (pagenate === "true") {
+                console.log("this if part works");
+                console.log({
+                    limit,
+                    page,
+                    skip,
+                    pagenate,
+                });
                 getData = await db
                     .collection("contacts")
                     .find({ userId: req.body.user.id })
                     .skip(skip)
                     .limit(limit)
                     .toArray();
-            else
+            } else
                 getData = await db
                     .collection("contacts")
                     .find({ userId: req.body.user.id })
-
                     .toArray();
         }
 
@@ -686,7 +692,7 @@ exports.handleGetContacts = async (req, res) => {
                     ? {}
                     : { userId: req.body.user.id },
             );
-
+        console.log(getData);
         await client.close();
         res.json({
             msgArr: getData,
