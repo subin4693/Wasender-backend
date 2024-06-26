@@ -41,7 +41,7 @@ exports.handleSignin = async (req, res) => {
         }
         const token = jwt.sign(
             { id: user._id, role: user.role },
-            process.env.JWT_SECRECT,
+            process.env.JWT_SECRECT
         );
 
         // res.cookie(
@@ -91,12 +91,12 @@ exports.handleSignUp = async (req, res) => {
 
             const insertedUser = await collection.findOne(
                 { _id: result.insertedId },
-                { projection: { role: 1, email: 1, _id: 1 } },
+                { projection: { role: 1, email: 1, _id: 1 } }
             );
 
             const token = jwt.sign(
                 { id: insertedUser._id, role: insertedUser.role },
-                process.env.JWT_SECRECT,
+                process.env.JWT_SECRECT
             );
             // res.cookie(
             //     "token",
@@ -248,7 +248,7 @@ exports.handleGetDevices = async (req, res) => {
             .countDocuments(
                 req.body.user.role === "admin"
                     ? {}
-                    : { userId: req.body.user.id },
+                    : { userId: req.body.user.id }
             );
 
         // await client.close();
@@ -328,7 +328,7 @@ exports.handleGetSch = async (req, res) => {
             .countDocuments(
                 req.body.user.role == "admin"
                     ? {}
-                    : { userId: req.body.user.id },
+                    : { userId: req.body.user.id }
             );
 
         // await client.close();
@@ -411,7 +411,7 @@ exports.handleEditSch = async (req, res) => {
                         lng: dataObj.lng,
                         type: dataObj.type,
                     },
-                },
+                }
             );
         // await client.close();
         res.json({
@@ -441,7 +441,7 @@ exports.handleInstance = async (req, res) => {
                     authenthicate: true,
                     status: "Active",
                 },
-            },
+            }
         );
 
         // await client.close();
@@ -481,7 +481,7 @@ exports.handleInstanceChange = async (req, res) => {
                         authenthicate: true,
                         status: "Active",
                     },
-                },
+                }
             );
         }
         // await client.close();
@@ -606,7 +606,7 @@ exports.handleEditContacts = async (req, res) => {
                     number: req.body.dataObj.number,
                 },
             },
-            { new: true },
+            { new: true }
         );
         // await client.close();
         res.json({
@@ -697,7 +697,7 @@ exports.handleGetContacts = async (req, res) => {
             .countDocuments(
                 req.body.user.role === "admin"
                     ? {}
-                    : { userId: req.body.user.id },
+                    : { userId: req.body.user.id }
             );
 
         // await client.close();
@@ -974,7 +974,7 @@ exports.handleLogChats = async (req, res) => {
         console.log(
             fromSelect.token,
             `${toSelect.number}@c.us`,
-            fromSelect.instanceID,
+            fromSelect.instanceID
         );
         let params = {
             token: fromSelect.token,
@@ -1053,7 +1053,7 @@ exports.handleGetReply = async (req, res) => {
             .countDocuments(
                 req.body.user.role === "admin"
                     ? {}
-                    : { userId: req.body.user.id },
+                    : { userId: req.body.user.id }
             );
 
         // await client.close();
@@ -1134,7 +1134,7 @@ exports.handleEditReply = async (req, res) => {
                     lng: dataObj.lng,
                     type: dataObj.type,
                 },
-            },
+            }
         );
         // await client.close();
         res.json({
@@ -1189,12 +1189,9 @@ exports.ultramsgwebhook = async (req, res) => {
 
             message: { $regex: new RegExp(messageMsg, "i") },
         };
-        console.log(query);
-        let dataObj = await db.collection("reply").findOne(query);
-        console.log("******************************");
 
-        console.log(dataObj);
-        console.log("******************************");
+        let dataObj = await db.collection("reply").findOne(query);
+
         if (!dataObj) {
             console.log("there is no data in database");
             return;
@@ -1266,13 +1263,14 @@ exports.ultramsgwebhook = async (req, res) => {
         console.log("message posted");
 
         axios(config).then(async (ress) => {
+            console.log("****************************************");
             console.log(ress.data); //*********************************************************************************************
-            async function sleep(ms) {
-                return new Promise((resolve) => setTimeout(resolve, ms));
-            }
+            console.log("****************************************");
+
             const text = await FilesetResolver.forTextTasks(
-                "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-text@0.10.0/wasm",
+                "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-text@0.10.0/wasm"
             );
+
             const textClassifier = await TextClassifier.createFromOptions(
                 text,
                 {
@@ -1280,20 +1278,20 @@ exports.ultramsgwebhook = async (req, res) => {
                         modelAssetPath: `https://storage.googleapis.com/mediapipe-models/text_classifier/bert_classifier/float32/1/bert_classifier.tflite`,
                     },
                     maxResults: 5,
-                },
+                }
             );
             if (!textClassifier) {
                 console.error("Text classifier is not yet initialized.");
                 return;
             }
-            if (message === "") {
+            if (data.body === "") {
                 alert(
-                    "Please write some text, or click 'Populate text' to add text",
+                    "Please write some text, or click 'Populate text' to add text"
                 );
                 return;
             }
-            await sleep(500);
-            const result = textClassifier.classify(message);
+
+            const result = textClassifier.classify(data.body);
             let preditctResult = result.classifications[0].categories;
 
             preditctResult.forEach((text) => {
@@ -1311,7 +1309,7 @@ exports.ultramsgwebhook = async (req, res) => {
             });
         });
         console.log("final line executed");
-        res.json({
+        return res.json({
             message: "sent",
         });
         //////// await db.collection("trigger").insertOne({
