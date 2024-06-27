@@ -82,3 +82,20 @@ process.on("SIGTERM", async () => {
     await closeDatabaseConnection();
     process.exit(0);
 });
+
+let textClassifier;
+
+async function createTextClassifier() {
+    const text = await FilesetResolver.forTextTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-text@0.10.0/wasm",
+    );
+    textClassifier = await TextClassifier.createFromOptions(text, {
+        baseOptions: {
+            modelAssetPath:
+                "https://storage.googleapis.com/mediapipe-models/text_classifier/bert_classifier/float32/1/bert_classifier.tflite",
+        },
+        maxResults: 5,
+    });
+}
+
+module.exports = textClassifier;

@@ -1,6 +1,7 @@
 const { connectToDatabase } = require("./db");
 const uniqid = require("uniqid");
 const { TextClassifier, FilesetResolver } = require("@mediapipe/tasks-text");
+const { textClassifier } = require("./index.js");
 
 //const { MongoClient, ObjectId, ChangeStream } = require("mongodb");
 const { mongodb, ObjectId } = require("mongodb");
@@ -1263,44 +1264,24 @@ exports.ultramsgwebhook = async (req, res) => {
         console.log("message posted");
 
         axios(config).then(async (ress) => {
-            const text = await FilesetResolver.forTextTasks(
-                "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-text@0.10.0/wasm",
-            );
             console.log(
-                "*********************************************text **************************************************",
+                "*****************************************messageMsg***********************************************",
             );
-            console.log(text);
+            console.log(messageMsg);
             console.log(
-                "*********************************************text **************************************************",
-            );
-
-            const textClassifier = await TextClassifier.createFromOptions(
-                text,
-                {
-                    baseOptions: {
-                        modelAssetPath: `https://storage.googleapis.com/mediapipe-models/text_classifier/bert_classifier/float32/1/bert_classifier.tflite`,
-                    },
-                    maxResults: 5,
-                },
-            );
-            console.log(
-                "*********************************************textClassifier **************************************************",
-            );
-            console.log(textClassifier);
-            console.log(
-                "*********************************************textClassifier **************************************************",
+                "*****************************************data.messageMsg***********************************************",
             );
 
             if (!textClassifier) {
                 console.error("Text classifier is not yet initialized.");
                 return;
             }
-            if (data.body === "") {
+            if (messageMsg === "") {
                 console.error("provide a message");
                 return;
             }
 
-            const result = textClassifier.classify(data.body);
+            const result = textClassifier.classify(messageMsg);
             console.log(
                 "*********************************************result **************************************************",
             );
