@@ -49,6 +49,21 @@ cron.schedule(" * * * * *", () => {
 
 //=====================================================================================================
 
+let textClassifier;
+
+async function createTextClassifier() {
+    const text = await FilesetResolver.forTextTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-text@0.10.0/wasm",
+    );
+    textClassifier = await TextClassifier.createFromOptions(text, {
+        baseOptions: {
+            modelAssetPath:
+                "https://storage.googleapis.com/mediapipe-models/text_classifier/bert_classifier/float32/1/bert_classifier.tflite",
+        },
+        maxResults: 5,
+    });
+}
+
 //app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(
@@ -71,6 +86,7 @@ app.use("/ablelyfwas", routez);
 app.use(bodyParser.json());
 app.listen(port, () => {
     console.log("app wasrendereing", port);
+    createTextClassifier().then(() => console.log("classifier initialized"));
 });
 
 process.on("SIGINT", async () => {
@@ -82,20 +98,5 @@ process.on("SIGTERM", async () => {
     await closeDatabaseConnection();
     process.exit(0);
 });
-
-let textClassifier;
-
-async function createTextClassifier() {
-    const text = await FilesetResolver.forTextTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-text@0.10.0/wasm",
-    );
-    textClassifier = await TextClassifier.createFromOptions(text, {
-        baseOptions: {
-            modelAssetPath:
-                "https://storage.googleapis.com/mediapipe-models/text_classifier/bert_classifier/float32/1/bert_classifier.tflite",
-        },
-        maxResults: 5,
-    });
-}
 
 module.exports = textClassifier;
