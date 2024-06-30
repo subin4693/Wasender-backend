@@ -5,6 +5,7 @@ const {
     handleSendMsg,
     handleSetDevices,
     handleGetDevices,
+    handleDeleteDevice,
     handleEditContacts,
     handleImportBulk,
     handleDuplicates,
@@ -48,6 +49,7 @@ router.post("/qrcode", handleQrCode);
 router.post("/instance", handleInstance);
 router.post("/instancechange", handleInstanceChange);
 router.post("/instancedetails", handleInstanceDetails);
+router.delete("/devices/delete/:id", handleDeleteDevice);
 //
 router.post("/setcontacts", handleSetContacts);
 router.post("/getcontacts", handleGetContacts);

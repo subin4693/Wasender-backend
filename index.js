@@ -14,6 +14,7 @@ const port = process.env.PORT || 5000;
 const mongodb = require("mongodb");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const { connectToDatabase, closeDatabaseConnection } = require("./db");
+const { TextClassifier, FilesetResolver } = require("@mediapipe/tasks-text");
 
 // const url = "mongodb+srv://sharukajmal2:sharukdb@cluster0.cfzoga8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 // const url = "mongodb://127.0.0.1:27017/WASender";
@@ -86,7 +87,6 @@ app.use("/ablelyfwas", routez);
 app.use(bodyParser.json());
 app.listen(port, () => {
     console.log("app wasrendereing", port);
-    createTextClassifier().then(() => console.log("classifier initialized"));
 });
 
 process.on("SIGINT", async () => {
@@ -99,4 +99,4 @@ process.on("SIGTERM", async () => {
     process.exit(0);
 });
 
-module.exports = textClassifier;
+//module.exports = textClassifier;

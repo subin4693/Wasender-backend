@@ -273,6 +273,26 @@ exports.handleGetDevices = async (req, res) => {
         });
     }
 };
+
+exports.handleDeleteDevice = async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log("id = " + id);
+        const db = await connectToDatabase();
+        const data = await db
+            .collection("devices")
+            .deleteOne({ _id: new ObjectId(id) });
+        console.log(data);
+        res.status(200).json({
+            messsage: "Device deleted",
+        });
+    } catch (error) {
+        console.log(error);
+        res.json({
+            message: "Delete device faild",
+        });
+    }
+};
 exports.handleCreateScheduler = async (req, res) => {
     try {
         // const client = await MongoClient.connect(url);
