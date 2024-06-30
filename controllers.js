@@ -1219,120 +1219,74 @@ exports.ultramsgwebhook = async (req, res) => {
         }
 
         let toDataNumbers = dataObj?.to;
+        for (let i = 0; i < toDataNumbers.length; i++) {
+            let data;
 
-        let data;
+            if (dataObj.type === "chat") {
+                data = qs.stringify({
+                    token: `${dataObj.from.token}`,
+                    to: `+${toDataNumbers[i].number}`,
+                    body: `${dataObj.body}`,
+                });
+            } else if (dataObj.type === "contact") {
+                data = qs.stringify({
+                    token: `${dataObj.from.token}`,
+                    to: `+${toDataNumbers[i].number}`,
+                    contact: `${dataObj.body}@c.us`,
+                });
+            } else if (dataObj.type === "document") {
+                console.log(dataObj.fileName);
+                data = qs.stringify({
+                    token: dataObj.from.token,
+                    to: `+${toDataNumbers[i].number}`,
+                    filename: dataObj.fileName,
+                    document: dataObj.file,
+                    caption: dataObj.body,
+                });
+            } else if (dataObj.type === "image") {
+                data = qs.stringify({
+                    token: `${dataObj.from.token}`,
+                    to: `+${toDataNumbers[i].number}`,
+                    image: `${dataObj.file}`,
+                    caption: `${dataObj.body}`,
+                });
+            } else if (dataObj.type === "video") {
+                data = qs.stringify({
+                    token: `${dataObj.from.token}`,
+                    to: `+${toDataNumbers[i].number}`,
+                    video: `${dataObj.file}`,
+                    caption: `${dataObj.body}`,
+                });
+            } else if (dataObj.type === "audio") {
+                data = qs.stringify({
+                    token: `${dataObj.from.token}`,
+                    to: `+${toDataNumbers[i].number}`,
+                    audio: `${dataObj.file}`,
+                });
+            } else if (dataObj.type === "location") {
+                data = qs.stringify({
+                    token: `${dataObj.from.token}`,
+                    to: `+${toDataNumbers[i].number}`,
+                    address: `${dataObj.body}`,
+                    lat: `${dataObj.lat}`,
+                    lng: `${dataObj.lng}`,
+                });
+            }
 
-        if (dataObj.type === "chat") {
-            data = qs.stringify({
-                token: `${dataObj.from[0].token}`,
-                to: `+${toDataNumbers.number}`,
-                body: `${dataObj.body}`,
-            });
-        } else if (dataObj.type === "contact") {
-            data = qs.stringify({
-                token: `${dataObj.from[0].token}`,
-                to: `+${toDataNumbers.number}`,
-                contact: `${dataObj.body}@c.us`,
-            });
-        } else if (dataObj.type === "document") {
-            console.log(dataObj.fileName);
-            data = qs.stringify({
-                token: dataObj.from[0].token,
-                to: `+${toDataNumbers.number}`,
-                filename: dataObj.fileName,
-                document: dataObj.file,
-                caption: dataObj.body,
-            });
-        } else if (dataObj.type === "image") {
-            data = qs.stringify({
-                token: `${dataObj.from[0].token}`,
-                to: `+${toDataNumbers.number}`,
-                image: `${dataObj.file}`,
-                caption: `${dataObj.body}`,
-            });
-        } else if (dataObj.type === "video") {
-            data = qs.stringify({
-                token: `${dataObj.from[0].token}`,
-                to: `+${toDataNumbers.number}`,
-                video: `${dataObj.file}`,
-                caption: `${dataObj.body}`,
-            });
-        } else if (dataObj.type === "audio") {
-            data = qs.stringify({
-                token: `${dataObj.from[0].token}`,
-                to: `+${toDataNumbers.number}`,
-                audio: `${dataObj.file}`,
-            });
-        } else if (dataObj.type === "location") {
-            data = qs.stringify({
-                token: `${dataObj.from[0].token}`,
-                to: `+${toDataNumbers.number}`,
-                address: `${dataObj.body}`,
-                lat: `${dataObj.lat}`,
-                lng: `${dataObj.lng}`,
+            let config = {
+                method: "post",
+                url: `https://api.ultramsg.com/${dataObj.from.instanceID}/messages/${dataObj.type}`, //type
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                data: data,
+            };
+            console.log("message posted");
+
+            axios(config).then(async (ress) => {
+                console.log("message sended");
             });
         }
-
-        let config = {
-            method: "post",
-            url: `https://api.ultramsg.com/${dataObj.from[0].instanceID}/messages/${dataObj.type}`, //type
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            data: data,
-        };
-        console.log("message posted");
-
-        axios(config).then(async (ress) => {
-            console.log(
-                "*****************************************messageMsg***********************************************",
-            );
-            console.log(messageMsg);
-            console.log(
-                "*****************************************data.messageMsg***********************************************",
-            );
-
-            if (!textClassifier) {
-                console.error("Text classifier is not yet initialized.");
-                return;
-            }
-            if (messageMsg === "") {
-                console.error("provide a message");
-                return;
-            }
-
-            const result = textClassifier.classify(messageMsg);
-            console.log(
-                "*********************************************result **************************************************",
-            );
-            console.log(result);
-            console.log(
-                "*********************************************result **************************************************",
-            );
-
-            let preditctResult = result.classifications[0].categories;
-            console.log(
-                "*********************************************preditctResult **************************************************",
-            );
-            console.log(preditctResult);
-            console.log(
-                "*********************************************preditctResult **************************************************",
-            );
-
-            preditctResult.forEach((text) => {
-                if (text.categoryName === "positive") {
-                    console.log("Positive" + text.score);
-                    setType("Positive");
-                } else {
-                    console.log("Negative" + text.score);
-                    setType("Negative");
-                }
-                if (text.score * 100 >= 60) {
-                    console.log(text.score);
-                    //textToSpeech(text.categoryName);
-                }
-            });
-        });
         console.log("final line executed");
         return res.json({
             message: "sent",
