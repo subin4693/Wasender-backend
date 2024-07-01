@@ -14,6 +14,7 @@
   "dependencies": {
     "@mediapipe/tasks-text": "^0.10.14",
     "@ngrok/ngrok": "^1.0.0",
+    "apos-to-lex-form": "^1.0.5",
     "axios": "^1.6.7",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
@@ -27,9 +28,13 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.3.0",
     "mongoose": "^8.2.3",
+    "natural": "^7.0.6",
     "node-cron": "^3.0.3",
     "node-schedule": "^2.1.1",
     "nodejs-base64-converter": "^1.0.5",
+    "nodemailer": "^6.9.14",
+    "spelling-corrector": "^3.0.0",
+    "stopword": "^3.0.1",
     "uniqid": "^5.4.0"
   },
   "description": "",

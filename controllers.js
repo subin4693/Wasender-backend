@@ -2,7 +2,7 @@ const { connectToDatabase } = require("./db");
 const uniqid = require("uniqid");
 const { TextClassifier, FilesetResolver } = require("@mediapipe/tasks-text");
 const { textClassifier } = require("./index.js");
-
+var nodemailer = require("nodemailer");
 //const { MongoClient, ObjectId, ChangeStream } = require("mongodb");
 const { mongodb, ObjectId } = require("mongodb");
 const http = require("https");
@@ -10,6 +10,7 @@ const { MongoClient, ServerApiVersion } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const bcryptjs = require("bcryptjs");
 const dotenv = require("dotenv");
+const getSentiment = require("./nlp");
 
 dotenv.config();
 const url =
@@ -125,6 +126,38 @@ exports.handleSignUp = async (req, res) => {
         res.json({
             message: req.body,
         });
+    }
+};
+
+exports.handleForgetPassword = async (req, res) => {
+    try {
+        let mailTransporter = nodemailer.createTransport({
+            service: "gmail",
+            //service: process.env.EMAIL_HOST,
+            port: process.env.EMAIL_PORT,
+            auth: {
+                user: process.env.EMAIL_USERNAME,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
+
+        let mailDetails = {
+            // from: "Cineflix support<support@cineflix.com>",
+            from: process.env.EMAIL_USERNAME,
+            to: "morattusingle12a@gmail.com",
+            subject: "Test mail",
+            text: "Node.js testing mail for GeeksforGeeks",
+        };
+
+        mailTransporter.sendMail(mailDetails, function (err, data) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("Email sent successfully");
+            }
+        });
+    } catch (error) {
+        console.log(error);
     }
 };
 
@@ -1285,6 +1318,7 @@ exports.ultramsgwebhook = async (req, res) => {
 
             axios(config).then(async (ress) => {
                 console.log("message sended");
+                getSentiment("working fine");
             });
         }
         console.log("final line executed");

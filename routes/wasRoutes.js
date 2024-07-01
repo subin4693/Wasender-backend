@@ -2,6 +2,7 @@ const {
     handleSetContacts,
     handleGetContacts,
     handleDeleteContacts,
+    handleForgetPassword,
     handleSendMsg,
     handleSetDevices,
     handleGetDevices,
@@ -39,6 +40,7 @@ const router = require("express").Router();
 // Auth
 router.post("/signup", handleSignUp);
 router.post("/signin", handleSignin);
+router.post("/forgetpassword", handleForgetPassword);
 // Dashboard
 router.post("/getdashboard", handleGetDashboard);
 
